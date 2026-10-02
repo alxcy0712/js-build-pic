@@ -1,0 +1,23 @@
+{
+  "schema_version": "0.1.0",
+  "task_id": null,
+  "created_at": null,
+  "input_refs_or_hashes": [],
+  "style_spec_ref": "style-spec.json",
+  "skill": { "id": null, "version": null, "variant_id": null, "variant_version": null },
+  "execution": {
+    "renderer": null,
+    "provider": null,
+    "provider_version": null,
+    "code_revision": null,
+    "environment": null,
+    "font_identifier": null,
+    "seed": null
+  },
+  "loaded_files": [],
+  "outputs": [],
+  "checks": [],
+  "cost": { "amount": null, "currency": null, "evidence": null },
+  "feedback_scope": null,
+  "status": "not_run"
+}

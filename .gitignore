@@ -1,0 +1,44 @@
+# Local image tasks and private records
+/inputs/
+/outputs/
+/runs/*
+!/runs/README.md
+/private/
+/tmp/
+
+# Image assets require explicit permission and a per-file exception before tracking
+*.[pP][nN][gG]
+*.[jJ][pP][gG]
+*.[jJ][pP][eE][gG]
+*.[wW][eE][bB][pP]
+*.[gG][iI][fF]
+*.[aA][vV][iI][fF]
+*.[hH][eE][iI][cC]
+*.[hH][eE][iI][fF]
+*.[tT][iI][fF]
+*.[tT][iI][fF][fF]
+*.[bB][mM][pP]
+*.[sS][vV][gG]
+
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+.aws/
+
+# Dependencies and generated files
+node_modules/
+dist/
+build/
+coverage/
+.cache/
+*.log
+
+# OS and editor temporary files
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
