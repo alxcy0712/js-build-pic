@@ -1,0 +1,19 @@
+{
+  "reviewer": "agent",
+  "drawing_level": null,
+  "overall": "not_run",
+  "checks": {
+    "subjects_and_recognizable_features": { "status": "not_run", "evidence": "" },
+    "pose_layout_and_main_scene": { "status": "not_run", "evidence": "" },
+    "source_dominant_colors": { "status": "not_run", "evidence": "" },
+    "obvious_childlike_shape_simplification": { "status": "not_run", "evidence": "" },
+    "drawing_ability_matches_selection": { "status": "not_run", "evidence": "" },
+    "detail_quality_matches_selection": { "status": "not_run", "evidence": "" },
+    "background_abstraction_matches_selection": { "status": "not_run", "evidence": "" },
+    "incidental_text_matches_selection": { "status": "not_run", "evidence": "" },
+    "wax_crayon_and_paper_texture": { "status": "not_run", "evidence": "" },
+    "unrequested_content_or_artifacts": { "status": "not_run", "evidence": "" }
+  },
+  "limitations": [],
+  "user_acceptance": "pending"
+}

@@ -1,0 +1,83 @@
+{
+  "schema_version": "0.1.0",
+  "task_mode": null,
+  "skill_id": null,
+  "skill_version": null,
+  "variant_id": null,
+  "representation": null,
+  "selection_reason": null,
+  "content_image_refs": [],
+  "style_reference_refs": [],
+  "family": null,
+  "medium": null,
+  "technique": null,
+  "palette": null,
+  "linework": null,
+  "texture": null,
+  "mood": null,
+  "identity_preservation": null,
+  "composition_preservation": null,
+  "background_policy": null,
+  "allowed_changes": [],
+  "hard_constraints": [],
+  "negative_constraints": [],
+  "style_strength": null,
+  "output_spec": {
+    "media_type": null,
+    "aspect_ratio": null,
+    "width": null,
+    "height": null,
+    "format": "gif",
+    "transparent_background": null,
+    "count": null,
+    "resolution_level": null,
+    "columns": null,
+    "deliverables": [
+      "animation.gif"
+    ]
+  },
+  "renderer_preference": null,
+  "budget": {
+    "amount": null,
+    "currency": null,
+    "retry_limit": null
+  },
+  "privacy_permissions": {
+    "external_transfer": {
+      "status": "pending",
+      "evidence": null
+    },
+    "dataset_reuse": {
+      "status": "pending",
+      "evidence": null
+    },
+    "public_display": {
+      "status": "pending",
+      "evidence": null
+    }
+  },
+  "acceptance_criteria": [],
+  "blocking_questions": [],
+  "user_statements": [],
+  "field_status": {},
+  "approval_status": "draft",
+  "approval_evidence": null,
+  "subject_policy": null,
+  "subject_selection": [],
+  "animation": {
+    "sequence": null,
+    "shared_particle_pool": null,
+    "transition": null,
+    "fps": null,
+    "duration_seconds": null,
+    "loop": null,
+    "designs_ref": null,
+    "per_image_designs": [],
+    "seconds_per_image": 5.4,
+    "final_hold_seconds": 1
+  },
+  "resolution_selection": {
+    "status": "pending",
+    "user_evidence": null
+  }
+}

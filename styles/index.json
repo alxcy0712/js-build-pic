@@ -2,30 +2,31 @@
   "schema_version": "0.1.0",
   "styles": [
     {
-      "id": "binary-digital-art",
-      "name": "二进制数字绘画",
-      "description": "用 0 和 1 字符重建内容图的轮廓、明暗和细节。",
-      "status": "planned",
-      "version": null,
-      "entrypoint": null,
-      "triggers": ["把图片转换为 0/1 字符画", "本项目约定的黑客帝国风格图片"],
-      "exclusions": ["0 和 1 的编程题", "单纯绿色调色", "影视剧情或角色讨论"],
-      "clarify": ["主体保留范围", "网格、纵向字符流或保留来源色彩的表现", "配色、输出规格和辉光需求"],
-      "hard_constraints": ["主体和细节由 0/1 字符重建", "空白用于排版，背景为纯色或透明", "strict_01 检查字符集合及导出图片"],
-      "renderer_candidate": "code"
+      "id": "mosaic-digital-art",
+      "name": "马赛克数字艺术",
+      "description": "将图片转换为马赛克数字艺术 GIF，支持不规则形状、0/1（约定的黑客帝国风格）、乱码字符和多图粒子重排。",
+      "status": "draft",
+      "version": "0.7.2",
+      "entrypoint": "skills/mosaic-digital-art/SKILL.md",
+      "requirements_ref": "skills/mosaic-digital-art/references/requirements.md"
+    },
+    {
+      "id": "childlike-crayon",
+      "name": "儿童蜡笔画",
+      "description": "将内容图片重绘为儿童蜡笔画，保留核心视觉结构、布局与主色。",
+      "status": "draft",
+      "version": "0.2.5",
+      "entrypoint": "skills/childlike-crayon/SKILL.md",
+      "requirements_ref": "skills/childlike-crayon/references/requirements.md"
     },
     {
       "id": "chinese-painting",
       "name": "中国古典绘画及国风表达",
-      "description": "按用户确认的媒介与技法转换画法，内容保留范围单独约定。",
+      "description": "待建设的国风绘画家族，具体媒介、技法和内容保留范围按规划约定确认。",
       "status": "planned",
       "version": null,
       "entrypoint": null,
-      "triggers": ["将图片转成国风", "图片的写意水墨、工笔、白描或水彩国风转换"],
-      "exclusions": ["仅询问绘画史", "仅讨论古装、宫殿或传统图案"],
-      "clarify": ["具体画法及视觉参考", "人物、衣着、构图与背景的保留范围", "输出规格及外部服务授权"],
-      "hard_constraints": ["内容图和风格参考图用途分开", "内容替换须在允许改动范围内", "题字、印章和签名按明确要求处理"],
-      "renderer_candidate": "image-model"
+      "requirements_ref": "styles/chinese-painting/requirements.md"
     }
   ]
 }

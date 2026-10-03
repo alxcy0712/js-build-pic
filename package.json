@@ -1,0 +1,14 @@
+{
+  "name": "js-build-pic",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "check": "node scripts/check-structure.mjs",
+    "test": "node scripts/check-structure.mjs && node --test scripts/*.test.mjs skills/*/tests/*.test.mjs",
+    "test:standalone": "node scripts/check-standalone.mjs"
+  }
+}

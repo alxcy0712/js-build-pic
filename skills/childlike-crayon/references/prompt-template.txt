@@ -1,0 +1,13 @@
+Image 1 is the sole content reference. Redraw it in wax crayon at the selected drawing ability. Produce ONE finished image with the original {{RATIO}} aspect ratio.
+
+{{LEVEL_GUIDANCE}}
+
+The level rules govern how every source element is depicted. Derive the core visual structure from this image and the user's requirements. Preserve its major shapes, identifying cues, relative proportions, spatial relationships, grouping, overlap, framing and dominant colors. Carry overall organization, repetition and density relationships through the simplification. Supporting clusters may occupy their original places as broad color masses. Preserve existing empty space. All depicted content comes from this input and its task notes; apply this same process to every image.
+
+Use broad back-and-forth strokes, coarse broken wax grain, paper gaps, uneven pressure and overshoots on pale off-white paper. Keep normal image resolution and crisp paper texture at every level. Match shape complexity, internal structure and shading to the chosen ability.
+
+TASK-SPECIFIC CONTENT ANCHORS (descriptions locate content; the level rules control its detail):
+{{SCENE}}
+
+Treat visible inscriptions as incidental unless the task notes explicitly identify text required by the user. Apply the level's text rule even when the source is clearly readable. Explicit user requirements override defaults only for the specified content.
+Avoid polished adult illustration, precise tracing, photographic detail, smooth gradients, vector-perfect contours, watercolor washes, invented objects, added decorations, new text, signatures and watermarks.

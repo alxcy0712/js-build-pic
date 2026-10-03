@@ -1,0 +1,111 @@
+{
+  "schema_version": "0.1.0",
+  "task_mode": "IMPROVE_SKILL",
+  "skill_id": "childlike-crayon",
+  "skill_version": "0.2.5",
+  "variant_id": "naive-source-colors",
+  "family": "儿童蜡笔画",
+  "medium": "wax-crayon",
+  "technique": "primitive shapes, crooked contours, broad scribbled fills",
+  "style_strength": "明显稚拙",
+  "drawing_level": null,
+  "drawing_levels": [
+    "low",
+    "medium",
+    "high"
+  ],
+  "drawing_level_meaning": "等级越低，细节准确度、完整度和笔画控制力越差；细节更粗糙、错位、残缺和杂乱，形状与笔画也更简单；图片分辨率与纸纹保持清晰",
+  "drawing_level_selection": "出图前先询问低、中、高档并等待明确回答；中档作为推荐选项，用户明确采用默认档时选择 medium；普通出图要求、预选值、等待超时或交互不可用时保持等待",
+  "palette": "原图主色，减少色阶",
+  "texture": "粗蜡笔、颗粒露纸、叠涂、少量出界",
+  "identity_preservation": "核心视觉结构、识别线索及整体组织保持对应，细节按等级概括",
+  "composition_preservation": "相对比例、位置、分组、遮挡、重复关系与留白",
+  "background_policy": "保留主要区域与空间关系；低档使用粗略色团和可辨的歪斜外轮廓，内部细节大幅省略；原图无背景时保留留白",
+  "allowed_changes": [
+    "简单形状概括",
+    "局部比例略夸张",
+    "细节与色阶简化",
+    "按等级降低非关键细节的准确度、完整度和笔画控制力",
+    "低档合并次要、重复或远处内容",
+    "低档附带文字转为不可读涂痕或留白"
+  ],
+  "hard_constraints": [
+    "核心内容保留",
+    "主要场景和构图对应",
+    "原图主色",
+    "明显稚拙",
+    "蜡笔质感",
+    "生成前取得明确档位选择",
+    "默认单张生成、自动重试为 0"
+  ],
+  "negative_constraints": [
+    "写实纹理",
+    "精细成人插画",
+    "矢量般平滑轮廓",
+    "水彩晕染",
+    "额外装饰、文字或签名"
+  ],
+  "output_spec": {
+    "media_type": "image",
+    "aspect_ratio": "source",
+    "format": "png",
+    "count": 1,
+    "transparent_background": false
+  },
+  "renderer_preference": "host-image-edit-tool",
+  "budget": {
+    "amount": null,
+    "currency": null,
+    "retry_limit": 0,
+    "cost_status": "host_tool_not_reported"
+  },
+  "privacy_permissions": {
+    "external_transfer": {
+      "status": "per_session",
+      "evidence": "沿用当前会话同服务同用途的既有授权，新服务及其他用途按对应授权执行"
+    },
+    "dataset_reuse": {
+      "status": "pending"
+    },
+    "public_display": {
+      "status": "pending"
+    }
+  },
+  "user_statements": [
+    "输入图片转换为稚拙儿童蜡笔风格，保留核心内容、构图与主色",
+    "绘画能力分低中高三档，默认中，越低细节越粗拙",
+    "粗略轮廓可辨、内部细节充分概括且附带文字不可读符合低档",
+    "skill 适配绝大多数场景，禁止单一使用用例；采用统一的视觉结构流程。",
+    "我在提出要求之后，应该反问我生成什么档的图片；最好只生成一张图片"
+  ],
+  "field_status": {
+    "core_style": "user_confirmed",
+    "preservation_and_output": "confirmed_in_style_confirmation",
+    "renderer": "user_confirmed",
+    "drawing_levels": "explicit",
+    "drawing_level_meaning": "explicit",
+    "drawing_level": "awaiting_explicit_user_choice",
+    "drawing_level_selection": "explicit_ask_and_wait",
+    "visual_acceptance": "prior_degree_confirmed_each_output_reviewed_individually",
+    "low_background_and_text": "explicit",
+    "prompt_scope": "explicit",
+    "technical_input_limits": "implementation_defaults",
+    "retry_cap": "explicit_default_zero_automatic_retries"
+  },
+  "approval_status": "workflow_change_requested_technical_checks_passed",
+  "approval_evidence": "三档、默认中、细节质量、粗略轮廓可辨和附带文字规则已确认；用户明确要求整个 skill 内容无关并采用统一视觉结构流程。 用户明确要求先反问档位并优先只生成一张，本轮直接更新交互与调用规则。",
+  "validation_scope": "0.2.5：18 项本 skill 测试、全项目 52 项回归、独立安装与演示入口检查通过；跨工作目录准备/导出及路径边界通过；新运行资料固定在本 skill 的 runs/",
+  "incidental_text_policy": {
+    "low": "不可读非文字符号或留白",
+    "medium": "粗略残缺痕迹",
+    "high": "可保留较可辨手写内容",
+    "exception": "用户明确要求的文字单独记录，冲突时取舍"
+  },
+  "prompt_scope": "所有输入以核心视觉结构、形状、比例、布局、遮挡、主色、信息密度与识别线索驱动同一流程；具体内容仅由当前输入与任务笔记提供",
+  "low_failure_conditions": [
+    "次要或背景存在精细内部构造、密集规则细部或精确轮廓",
+    "附带文字存在可读词句、数字或照抄字符序列",
+    "蜡笔纹理下仍有精细形体与写实光影"
+  ],
+  "input_routing": "single_visual_structure_workflow"
+}

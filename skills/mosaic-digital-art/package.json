@@ -1,0 +1,22 @@
+{
+  "name": "mosaic-digital-art",
+  "version": "0.7.2",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20.9.0"
+  },
+  "scripts": {
+    "render": "node scripts/animate.mjs",
+    "verify": "node scripts/animate.mjs",
+    "render:shapes": "node scripts/shapes.mjs",
+    "verify:shapes": "node scripts/shapes.mjs",
+    "test": "node --test tests/*.test.mjs",
+    "demo": "node scripts/demo.mjs",
+    "render:characters": "node scripts/render.mjs",
+    "verify:characters": "node scripts/verify.mjs"
+  },
+  "dependencies": {
+    "sharp": "0.35.5"
+  }
+}

@@ -30,7 +30,7 @@
 - [Agent Skills 规范](https://agentskills.io/specification)：入口文件含 YAML frontmatter，`name` 对应目录名，`description` 描述用途，扩展版本信息放入 `metadata`。资源按需加载，宿主发现机制另行适配。
 - [技能描述优化指南](https://agentskills.io/skill-creation/optimizing-descriptions)：路由评测应覆盖正例、共享关键词的近似反例，并在真实 Agent 中观察是否加载 skill；开发与验证案例分开。
 
-项目采用这些通用约定。当前索引中的家族均为 `planned`，测试场景列在评测流程中，实际运行结果待首个 skill 实现后记录。
+项目采用这些通用约定。初始化时索引中的家族均为 `planned`，当前进展以风格索引为准。通用验收要求列在评测流程中，具体案例与实际运行结果维护在对应风格目录。
 
 ## 名称检查
 
@@ -58,3 +58,7 @@
 ## 首个样例要解决的问题
 
 确认一张有当前处理权限的内容图、风格与输出约束；选择可执行渲染器；核验字形、图像解码和导出依赖；实际检查内容保留与风格效果。完成这些检查后，再记录适用范围、失败案例和版本状态。
+
+后续执行的来源、版本与许可核验见 [马赛克数字艺术来源说明](../skills/mosaic-digital-art/references/sources.md)；本文件保留初始化时的调研范围与结论。
+
+2026-10-02 新增风格家族的同类产品、公开 skills、名称线索、CC0 样例及依赖核查，见 [儿童蜡笔画来源说明](../skills/childlike-crayon/references/sources.md)。对应生成与检查证据保存在该 skill 的验证资料中。

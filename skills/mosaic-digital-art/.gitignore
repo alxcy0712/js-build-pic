@@ -1,12 +1,11 @@
-# Retired project-level directories: ignore accidental private files; npm run check rejects these paths
-/inputs/
-/outputs/
-/runs/
-
 # Local skill tasks and private records
-/skills/*/runs/
+runs/
 /private/
 /tmp/
+
+# Retired paths: private-file protection; execution uses runs/
+inputs/
+outputs/
 
 # Image assets require explicit permission and a per-file exception before tracking
 *.[pP][nN][gG]
