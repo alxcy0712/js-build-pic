@@ -3,6 +3,8 @@ import { lstat, readFile, readdir, realpath } from 'node:fs/promises';
 import { isBuiltin } from 'node:module';
 import { basename, dirname, extname, isAbsolute, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseArgs } from 'node:util';
+import { deliveryFiles } from './delivery-files.mjs';
 
 export const root = fileURLToPath(new URL('../', import.meta.url));
 export const ignored = new Set(['node_modules', '.cache', 'runs', '.git']);
@@ -12,9 +14,10 @@ export function assertContained(base, target) {
   assert.ok(!isAbsolute(rel) && rel !== '..' && !rel.startsWith('..' + sep), `Reference escapes folder: ${target}`);
 }
 
-async function localReference(base, file, reference) {
+async function localReference(base, file, reference, included) {
   const target = resolve(dirname(file), decodeURIComponent(reference.split('#')[0]));
   assertContained(base, target);
+  if (included) assert.ok(included.has(relative(base, target)) || reference.endsWith('/'), `Reference missing from delivery: ${reference}`);
   assert.ok(!relative(base, target).split(sep).some(part => ignored.has(part)), `Reference uses generated files: ${file} -> ${reference}`);
   assertContained(base, await realpath(target));
 }
@@ -29,12 +32,12 @@ async function* files(directory, excluded = ignored) {
   }
 }
 
-async function checkLinks(base, file, content) {
+async function checkLinks(base, file, content, included) {
   const links = /\[[^\]]*\]\(<?([^\s)>]+)>?(?:\s+"[^"]*")?\)|^\s*\[[^\]]+\]:\s*<?([^\s>]+)>?/gm;
   for (const match of content.matchAll(links)) {
     const href = match[1] ?? match[2];
     if (/^(?:https?:|mailto:|#)/i.test(href)) continue;
-    await localReference(base, file, href);
+    await localReference(base, file, href, included);
   }
 }
 
@@ -48,8 +51,9 @@ async function assertAbsent(base, paths) {
   }
 }
 
-export async function checkSkill(base) {
+export async function checkSkill(base, paths) {
   base = await realpath(base);
+  const included = paths && new Set(paths);
   await assertAbsent(base, ['inputs', 'outputs']);
   const pkg = JSON.parse(await readFile(join(base, 'package.json')));
   const lock = JSON.parse(await readFile(join(base, 'package-lock.json')));
@@ -69,12 +73,16 @@ export async function checkSkill(base) {
     assert.ok(!item.link, 'Lockfile contains a linked dependency');
     if (item.resolved) assert.match(item.resolved, /^https:\/\//, 'Lockfile dependency must use a registry URL');
   }
-  for await (const file of files(base)) {
+  const sources = paths ? paths.map(path => join(base, path)) : files(base);
+  for await (const file of sources) {
+    assertContained(base, file);
+    assert.ok(!(await lstat(file)).isSymbolicLink(), `Source contains a symlink: ${file}`);
+    assert.ok((await lstat(file)).isFile(), `Source requires a regular file: ${file}`);
     const extension = extname(file);
     if (!['.md', '.txt', '.json', '.yaml', '.yml', '.mjs', '.js', '.cjs', '.ts', '.sh'].includes(extension)) continue;
     const content = await readFile(file, 'utf8');
     if (extension === '.json') JSON.parse(content);
-    if (extension === '.md') await checkLinks(base, file, content);
+    if (extension === '.md') await checkLinks(base, file, content, included);
     // Tests contain deliberately invalid paths; imports still obey the package boundary.
     if (!relative(base, file).startsWith('tests' + sep) && basename(file) !== 'package-lock.json') {
       assert.doesNotMatch(content, /(?:\/Users\/|\/home\/|\/private\/|\/tmp\/|[A-Z]:\\Users\\)/, `Machine-specific path: ${file}`);
@@ -88,21 +96,21 @@ export async function checkSkill(base) {
       for (const match of content.matchAll(imports)) {
         const specifier = match[1] ?? match[2];
         if (isBuiltin(specifier)) continue;
-        if (specifier.startsWith('.')) await localReference(base, file, specifier);
+        if (specifier.startsWith('.')) await localReference(base, file, specifier, included);
         else {
           const name = specifier.startsWith('@') ? specifier.split('/').slice(0, 2).join('/') : specifier.split('/')[0];
           assert.ok(Object.hasOwn(dependencies, name), `Undeclared dependency in ${file}: ${specifier}`);
         }
       }
       for (const [, reference] of content.matchAll(/new URL\(['"]([^'"]+)['"],\s*import\.meta\.url\)/g)) {
-        await localReference(base, file, reference);
+        await localReference(base, file, reference, included);
       }
     }
   }
   return pkg;
 }
 
-export async function checkProject(base = root) {
+export async function checkProject(base = root, paths) {
   base = await realpath(base);
   await assertAbsent(base, ['inputs', 'outputs', 'runs']);
   const index = JSON.parse(await readFile(join(base, 'styles/index.json')));
@@ -119,7 +127,8 @@ export async function checkProject(base = root) {
     } else {
       assert.equal(style.entrypoint, `skills/${style.id}/SKILL.md`);
       assert.equal(style.requirements_ref, `skills/${style.id}/references/requirements.md`);
-      const pkg = await checkSkill(join(base, 'skills', style.id));
+      const prefix = `skills/${style.id}/`;
+      const pkg = await checkSkill(join(base, 'skills', style.id), paths?.filter(path => path.startsWith(prefix)).map(path => path.slice(prefix.length)));
       assert.equal(style.version, pkg.version);
     }
     await localReference(base, join(base, 'index'), style.requirements_ref);
@@ -127,13 +136,15 @@ export async function checkProject(base = root) {
   assert.deepEqual(entries.map(entry => entry.name).sort(), index.styles.filter(style => style.entrypoint).map(style => style.id).sort());
   const planned = index.styles.filter(style => style.entrypoint === null).map(style => style.id).sort();
   assert.deepEqual((await readdir(join(base, 'styles'))).sort(), ['index.json', ...planned].sort(), 'styles/ holds the index and planned styles only');
-  for await (const file of files(base, new Set([...ignored, 'skills']))) {
+  const sources = paths ? paths.filter(path => !path.startsWith('skills/')).map(path => join(base, path)) : files(base, new Set([...ignored, 'skills']));
+  for await (const file of sources) {
     if (extname(file) === '.md') await checkLinks(base, file, await readFile(file, 'utf8'));
     if (extname(file) === '.json') JSON.parse(await readFile(file, 'utf8'));
   }
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
-  await checkProject();
+  const { values } = parseArgs({ options: { include: { type: 'string', multiple: true } } });
+  await checkProject(root, await deliveryFiles(root, values.include));
   console.log('PASS: independent skill boundaries, references, dependencies, index and retired paths');
 }

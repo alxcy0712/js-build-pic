@@ -1,12 +1,13 @@
 {
   "name": "childlike-crayon",
-  "version": "0.2.5",
+  "version": "0.3.3",
   "private": true,
   "type": "module",
   "engines": { "node": ">=20.9.0" },
   "scripts": {
     "prepare": "node scripts/workflow.mjs prepare",
     "finish": "node scripts/workflow.mjs finish",
+    "review": "node scripts/workflow.mjs review",
     "test": "node --test tests/*.test.mjs",
     "demo": "node scripts/demo.mjs"
   },

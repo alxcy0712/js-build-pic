@@ -1,0 +1,11 @@
+{
+  "observation": "",
+  "core_information": [
+    { "source": "", "role": "", "depiction": "", "guide_marks": [] }
+  ],
+  "optional_details": [
+    { "source": "", "importance": "", "action": "omit", "depiction": "", "guide_marks": [] }
+  ],
+  "grouping_check": "",
+  "plan_check": ""
+}

@@ -20,7 +20,7 @@ npm test
 npm run test:standalone
 ```
 
-`check` 检查 skill 边界、提示词中的外部路径、文档链接、代码引用、依赖、索引一致性和退役目录。`test` 先做结构检查，再运行检查器回归与已安装 skill 的测试。`test:standalone` 逐个复制 skill 到项目外含空格和中文的目录，在副本内独立安装依赖、保存缓存并执行测试与演示；结束后清理临时副本和演示产物，报告保存在各自的 `runs/standalone-<随机后缀>/report.json`。模型型 skill 的本地工作流与实际图像生成分别记录。
+`check` 按 Git 交付清单检查 skill 边界、文档及代码引用、依赖、索引和退役目录。`test` 先做结构检查，再运行检查器回归与已安装 skill 的测试。`test:standalone` 严格按 Git 文件清单构建项目外含空格和中文的副本，在副本内全新安装依赖、保存缓存及空 npm 配置，执行测试与演示；结束后清理临时副本和演示产物，报告保存在各自的 `runs/standalone-<随机后缀>/report.json`。模型型还需由 Agent 完成真实生成与视觉验收。候选新增文件可通过重复 `--include 仓库相对路径` 明确纳入清单，`--skill id` 限定检查范围，`--keep` 保留当次副本供真实端到端检查。
 
 [风格索引](styles/index.json) 只保存名称、用途摘要、状态、版本及入口。已实现风格的定义、参数、提示词和验证证据在各自 skill 内维护；待建设风格的约定暂存于 `styles/`，实现时迁入 skill。
 
@@ -42,6 +42,7 @@ npm run test:standalone
 | [shared/templates/README.md](shared/templates/README.md) | 创建 skill 时可复制的记录模板 |
 | [scripts/check-structure.mjs](scripts/check-structure.mjs) | 独立边界、引用与清理规则检查 |
 | [scripts/check-standalone.mjs](scripts/check-standalone.mjs) | 项目外独立安装、测试和演示 |
+| [scripts/delivery-files.mjs](scripts/delivery-files.mjs) | Git 交付清单与严格复制 |
 | [research/initial-landscape.md](research/initial-landscape.md) | 初次联网调研、来源和待核验项目 |
 | [context/project-state.md](context/project-state.md) | 下一次对话需要的状态摘要 |
 | [context/decisions.md](context/decisions.md) | 已确认约定与初始化选择 |
@@ -50,7 +51,7 @@ skill 通过需求确认后，按需建立 `skills/<skill-id>/SKILL.md`、配方
 
 ## 本地任务与 Git
 
-每次运行的输入副本、成图、规格、日志和回退快照统一放在对应 `skills/<skill-id>/runs/<task-id>/`，使用该 skill 自带的记录格式。命令中的相对输出及校验路径 `runs/...` 均以 skill 目录为基准，原始输入可使用外部绝对路径。各包通过自己的清单和锁文件安装依赖，缓存保存在本包的 `.cache/`；复制交付时可省略 `node_modules/`、`.cache/` 和私人 `runs/`。
+每次运行的输入副本、成图、规格和日志统一放在对应 `skills/<skill-id>/runs/<task-id>/`，使用该 skill 自带的记录格式。命令中的相对输出及校验路径 `runs/...` 均以 skill 目录为基准，原始输入可使用外部绝对路径。各包通过自己的清单和锁文件安装依赖，缓存保存在本包的 `.cache/`。Git 交付文件承载可复用能力，运行资料保持可清理，回退以 Git 版本为依据。
 
 根目录 `inputs/`、`outputs/`、`runs/` 已退役，结构检查会拦截它们再次出现。2026-10-02 已清理旧输入、旧打包文件、根目录空依赖、缓存及重复跳转文档。删改文件时同步检查入口、提示词、规范、模板、脚本和索引；历史摘要保留当时结果，当前执行与恢复遵循现行 skill 入口和目录边界。
 

@@ -2,7 +2,7 @@
   "schema_version": "0.1.0",
   "task_mode": "IMPROVE_SKILL",
   "skill_id": "childlike-crayon",
-  "skill_version": "0.2.5",
+  "skill_version": "0.3.3",
   "variant_id": "naive-source-colors",
   "family": "儿童蜡笔画",
   "medium": "wax-crayon",
@@ -14,19 +14,19 @@
     "medium",
     "high"
   ],
-  "drawing_level_meaning": "等级越低，细节准确度、完整度和笔画控制力越差；细节更粗糙、错位、残缺和杂乱，形状与笔画也更简单；图片分辨率与纸纹保持清晰",
+  "drawing_level_meaning": "重要度决定保留项，档位按细节组控制可选信息保留量，画法控制准确度、完整度与笔画稚拙程度；核心信息全档保护，图片分辨率与纸纹保持清晰",
   "drawing_level_selection": "出图前先询问低、中、高档并等待明确回答；中档作为推荐选项，用户明确采用默认档时选择 medium；普通出图要求、预选值、等待超时或交互不可用时保持等待",
   "palette": "原图主色，减少色阶",
   "texture": "粗蜡笔、颗粒露纸、叠涂、少量出界",
-  "identity_preservation": "核心视觉结构、识别线索及整体组织保持对应，细节按等级概括",
+  "identity_preservation": "核心含义、识别线索与整体组织保持对应，各档采用最低充分画法",
   "composition_preservation": "相对比例、位置、分组、遮挡、重复关系与留白",
-  "background_policy": "保留主要区域与空间关系；低档使用粗略色团和可辨的歪斜外轮廓，内部细节大幅省略；原图无背景时保留留白",
+  "background_policy": "按信息作用保护背景核心组织和主色，按档位选择可选细节；原图留白保持留白",
   "allowed_changes": [
     "简单形状概括",
     "局部比例略夸张",
     "细节与色阶简化",
     "按等级降低非关键细节的准确度、完整度和笔画控制力",
-    "低档合并次要、重复或远处内容",
+    "低档合并次要、重复或远处内容，同时保持核心排列关系与作用可辨",
     "低档附带文字转为不可读涂痕或留白"
   ],
   "hard_constraints": [
@@ -35,8 +35,13 @@
     "原图主色",
     "明显稚拙",
     "蜡笔质感",
+    "生成前完成带原图证据的分步分析与取舍计划",
+    "核心信息保护与可选细节预算分别核对",
+    "选中细节按重要度顺序取舍",
     "生成前取得明确档位选择",
-    "默认单张生成、自动重试为 0"
+    "默认单张生成、自动重试为 0",
+    "每档保护主要部分的最低内外结构与连接",
+    "选中可选组有可核对的粗略可见表达"
   ],
   "negative_constraints": [
     "写实纹理",
@@ -76,7 +81,13 @@
     "绘画能力分低中高三档，默认中，越低细节越粗拙",
     "粗略轮廓可辨、内部细节充分概括且附带文字不可读符合低档",
     "skill 适配绝大多数场景，禁止单一使用用例；采用统一的视觉结构流程。",
-    "我在提出要求之后，应该反问我生成什么档的图片；最好只生成一张图片"
+    "我在提出要求之后，应该反问我生成什么档的图片；最好只生成一张图片",
+    "可选细节需要具有高中低档区分度，按照重要程度取舍",
+    "通用规则采用一步一步的分析流程，内容取自当前输入",
+    "用户确认讨论的思路并明确开始完善skill，要求广泛适用、避免个例",
+    "Git交付的通用规则、模板和代码提供能力；runs仅承担可清理的执行产物。每次从当次输入完成完整分析，按固定能力维度验证，回退依据Git版本。",
+    "用户指出低档内部结构消失，要求继续改进通用skill并总结广泛适用方法；按视觉作用拆分结构基底与附属丰富度，每档保护最低充分结构。",
+    "用户要求复杂上传图的验证覆盖人物、风景等内容；按视觉层次、遮挡、辨识与信息密度检查通用流程。"
   ],
   "field_status": {
     "core_style": "user_confirmed",
@@ -86,26 +97,58 @@
     "drawing_level_meaning": "explicit",
     "drawing_level": "awaiting_explicit_user_choice",
     "drawing_level_selection": "explicit_ask_and_wait",
-    "visual_acceptance": "prior_degree_confirmed_each_output_reviewed_individually",
+    "visual_acceptance": "agent_pass_within_recorded_scope_user_acceptance_pending",
     "low_background_and_text": "explicit",
     "prompt_scope": "explicit",
     "technical_input_limits": "implementation_defaults",
-    "retry_cap": "explicit_default_zero_automatic_retries"
+    "retry_cap": "explicit_default_zero_automatic_retries",
+    "detail_definition": "user_confirmed",
+    "detail_retention_targets": "user_confirmed_approximate_targets",
+    "analysis_workflow": "user_confirmed",
+    "independent_delivery": "explicit_git_files_and_current_input"
   },
-  "approval_status": "workflow_change_requested_technical_checks_passed",
-  "approval_evidence": "三档、默认中、细节质量、粗略轮廓可辨和附带文字规则已确认；用户明确要求整个 skill 内容无关并采用统一视觉结构流程。 用户明确要求先反问档位并优先只生成一张，本轮直接更新交互与调用规则。",
-  "validation_scope": "0.2.5：18 项本 skill 测试、全项目 52 项回归、独立安装与演示入口检查通过；跨工作目录准备/导出及路径边界通过；新运行资料固定在本 skill 的 runs/",
+  "approval_status": "user_confirmed_general_improvement_candidate_checks_completed",
+  "approval_evidence": "用户2026-10-04明确要求持续完善独立通用能力与统一流程，授权本轮新输入和分阶段实图验证；稳定版替换与效果确认分别记录。",
+  "validation_scope": "0.3.3 draft：73项项目回归、31项skill测试与严格独立安装通过；冻结后新复杂混合模拟照片三档和清理后新输入的技术与逐项Agent检查通过，组级保留量为0/20、10/20、16/20与0/4。中档组内重复成员部分省略按粗略残缺表达记录。此前0.3.2复杂人物、风景各三档的失败和未知项保留；真实用户自然照片、精确身份、多次生成稳定性和其他宿主按实测范围记录，用户效果验收及稳定版替换pending。",
   "incidental_text_policy": {
     "low": "不可读非文字符号或留白",
     "medium": "粗略残缺痕迹",
     "high": "可保留较可辨手写内容",
-    "exception": "用户明确要求的文字单独记录，冲突时取舍"
+    "exception": "源图中承载核心含义或用户明确要求的文字按核心计划保留，其余文字进入可选细节取舍"
   },
-  "prompt_scope": "所有输入以核心视觉结构、形状、比例、布局、遮挡、主色、信息密度与识别线索驱动同一流程；具体内容仅由当前输入与任务笔记提供",
+  "prompt_scope": "当前输入按统一分步分析形成最低充分画法；各核心项使用既定最低表达，附属丰富度由选中可选组提供；核心与选中项的形状构成唯一生成参考稿，并逐组核对可见性。",
   "low_failure_conditions": [
-    "次要或背景存在精细内部构造、密集规则细部或精确轮廓",
-    "附带文字存在可读词句、数字或照抄字符序列",
-    "蜡笔纹理下仍有精细形体与写实光影"
+    "原图最低结构遗漏或核心计划删减过度",
+    "超出核心最低充分表达或选中计划的精细内部结构",
+    "省略项被恢复或附属文字超出计划可读",
+    "工整精细形体和写实光影"
   ],
-  "input_routing": "single_visual_structure_workflow"
+  "input_routing": "single_visual_structure_workflow",
+  "detail_definition": "移除后仍保有主要含义、辨识、结构、构图和主色关系的附属信息；单项与成组作用分别核对",
+  "detail_priority": "根据当前原图与用户意图，按对辨识、表达完整度和视觉层次的贡献排列可选细节，面积和视觉显著性作为辅助证据",
+  "detail_retention_targets": {
+    "low": [
+      0,
+      0.1
+    ],
+    "medium": 0.5,
+    "high": 0.8,
+    "basis": "optional_detail_groups",
+    "core_information": "protected_separately",
+    "rounding": "中高档最接近目标的整数组数；低档最多向下取整的10%，允许全部省略",
+    "interpretation": "准备阶段的可核对取舍目标；实际成图单独视觉验收"
+  },
+  "analysis_workflow": [
+    "view_current_source",
+    "observe_organization_and_relations",
+    "classify_core_and_optional_groups",
+    "plan_ranked_selection_and_minimum_depiction",
+    "render_and_verify_core_and_selected_content_guides",
+    "generate_once_and_review_each_item"
+  ],
+  "candidate_approvals": {
+    "scope": "user_confirmed",
+    "stable_replacement": "pending",
+    "user_visual_acceptance": "pending"
+  }
 }
