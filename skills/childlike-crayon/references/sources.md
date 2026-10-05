@@ -7,7 +7,7 @@
 | sharp | 0.35.5；[Apache-2.0](https://github.com/lovell/sharp/blob/v0.35.5/LICENSE) | 静态图解码、方向与色彩规范化、PNG 导出、像素检查 |
 | sharp 平台依赖 | 版本与完整性见 package-lock.json，许可随 npm 原包提供 | 平台绑定及 libvips，分发时保留原包许可 |
 | Node.js / npm | Node.js 20.9.0+，依赖按锁文件安装 | 本地命令、测试与导出 |
-| 宿主图像编辑工具 | 以当前环境真实可用的工具、参数和版本为准 | 接收内容图与通用画法，执行重绘 |
+| 宿主图像编辑工具 | 以当前环境真实可用的工具、参数和版本为准 | 按顺序接收原图、辅助参考稿与通用画法，执行重绘 |
 
 sharp 接口参考：[输入元数据](https://sharp.pixelplumbing.com/api-input/)、[构造器与像素限制](https://sharp.pixelplumbing.com/api-constructor/)。独立运行需要一个 npm 运行依赖，字体依赖为零。
 

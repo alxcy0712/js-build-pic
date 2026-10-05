@@ -1,14 +1,12 @@
 {
-  "low": {
-    "detail_retention_target": 0.1,
-    "guidance": "Drawing ability: LOW. Use the approved content plan to reconstruct the source with a few awkward primitive shapes, broad flat color masses and the minimum external and internal structural marks needed for each core role. Retain 0–10% of the optional detail groups, chosen in importance order. Express core divisions, connections, gaps and repeated organization with sparse coarse marks, wandering open contours, clumsy joins and very weak hand control. Compress secondary contour variation and surface richness. Leave open space around the planned structural marks; depth uses overlap and broad color placement. Selected optional features receive only sparse crude marks. Optional inscriptions are blank areas or a few nonalphabetic strokes. Source-grounded lettering identified as core information follows its approved depiction. Use visible paper gaps, uncontrolled overshoots and clear wax grain at normal output resolution."
+  "simple": {
+    "label": "简笔蜡笔",
+    "description": "线条和形状更概括，细节更少，稚嫩感更强",
+    "guidance": "Use fewer strokes, broad color masses and awkward simple outlines. Express every core part and relationship with readable elementary shapes and the minimum identifying lines. Reduce local texture, tiny marks, shading and decoration. Simplify the way each essential feature is drawn while keeping that feature visible and connected."
   },
-  "medium": {
-    "detail_retention_target": 0.5,
-    "guidance": "Drawing ability: MEDIUM. Retain about 50% of the optional detail groups, chosen in importance order, while preserving all core information through simple uneven shapes and a few identifying marks. Use the approved plan to decide which features appear. Express retained features with approximate, coarse construction, hesitant or disconnected contours, local asymmetry and incomplete joins. Use broad patchy fills and limited overlapping color areas for depth. Dense or repeated content becomes grouped shapes with a small number of interior marks. Selected optional inscriptions use rough incomplete traces; source-grounded lettering identified as core information follows its approved depiction. Keep the whole drawing visibly childlike at thumbnail size, including its largest shapes. Maintain clear paper and wax grain at normal output resolution."
-  },
-  "high": {
-    "detail_retention_target": 0.8,
-    "guidance": "Drawing ability: HIGH. Retain about 80% of the optional detail groups, chosen in importance order, while preserving all core information. Follow the approved content plan, using awkward elementary shapes, uneven contours and broad patchy fills. Selected optional features may have more complete internal structure, coarse shading patches and recognizable hand-drawn inscriptions. Core items keep their defined minimum depiction. Maintain visibly childlike construction through local exaggeration, asymmetry and imperfect joins, including the largest shapes at thumbnail size. Represent surface information with a few coarse marks and simplified color areas. Preserve clear paper gaps, broken wax grain and normal output resolution."
+  "rich": {
+    "label": "丰富蜡笔",
+    "description": "多保留有意义的内部特征，仍然简单、稚拙",
+    "guidance": "Include more source-grounded meaningful internal structure and supporting features from the plan, with a little coarse texture. Express them through simple uneven lines and broad color patches. Keep the largest shapes awkward and childlike. Treat material detail and lighting as a few flat cues; fine wood grain, dense rendering and photographic shading exceed this drawing method."
   }
 }
