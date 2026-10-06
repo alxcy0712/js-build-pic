@@ -16,7 +16,7 @@ function analysis(notes = scene, details = []) {
     core_information: [{ source: '当前输入中的主要色区。', role: '承载整体视觉组织。', depiction: notes, guide_marks: [mark] }],
     optional_details: details.map(item => ({ guide_marks: item.action === 'omit' ? [] : [mark], ...item })),
     grouping_check: '组合的信息保有整体组织与核心含义。',
-    plan_check: '原图证据、作用判断、取舍顺序和档位预算已核对。',
+    plan_check: '原图证据、作用判断、取舍顺序和画法已核对。',
   };
 }
 async function fixture(t) {
@@ -36,7 +36,7 @@ test('prepare normalizes orientation and removes EXIF while preserving displayed
   const input = join(directory, 'rotated.jpg');
   await sharp({ create: { width: 80, height: 40, channels: 3, background: '#c86' } })
     .withMetadata({ orientation: 6 }).jpeg().toFile(input);
-  const result = await prepare(input, out, analysis(), 'medium');
+  const result = await prepare(input, out, analysis(), 'rich');
   const meta = await sharp(result.input).metadata();
   assert.equal(meta.width, 40);
   assert.equal(meta.height, 80);
@@ -49,7 +49,7 @@ test('prepare normalizes orientation and removes EXIF while preserving displayed
 test('transparent content uses the agreed light paper and stays opaque', async t => {
   const { input, out } = await fixture(t);
   await png(input, { r: 255, g: 0, b: 0, alpha: 0 });
-  const result = await prepare(input, out, analysis(), 'medium');
+  const result = await prepare(input, out, analysis(), 'rich');
   const pixels = await sharp(result.input).raw().toBuffer();
   assert.deepEqual([...pixels.subarray(0, 3)], [250, 247, 239]);
   assert.equal((await sharp(result.input).stats()).isOpaque, true);
@@ -58,7 +58,7 @@ test('transparent content uses the agreed light paper and stays opaque', async t
 test('large inputs are resized proportionally without enlarging small sources', async t => {
   const { input, out } = await fixture(t);
   await png(input, '#8ba', 2000, 1000);
-  const result = await prepare(input, out, analysis(), 'medium');
+  const result = await prepare(input, out, analysis(), 'rich');
   const meta = await sharp(result.input).metadata();
   assert.deepEqual([meta.width, meta.height], [1536, 768]);
 });
@@ -77,31 +77,52 @@ test('active formats, corrupt image data and oversized files are rejected', asyn
 test('preparation preserves selected descriptions literally and requires a complete analysis', async t => {
   const { input, out, directory } = await fixture(t);
   const notes = scene + ' 标记 $& 与 {{RATIO}}。';
-  await prepare(input, out, analysis(notes), 'medium');
+  await prepare(input, out, analysis(notes), 'rich');
   assert.ok((await readFile(join(out, 'prompt.txt'), 'utf8')).includes(notes));
-  await assert.rejects(prepare(input, join(directory, 'empty'), analysis(' '), 'medium'), /Core information/);
+  await assert.rejects(prepare(input, join(directory, 'empty'), analysis(' '), 'rich'), /Core information/);
+});
+
+test('image text remains literal in its own prompt section and receives itemized review', async t => {
+  const { input, out, directory } = await fixture(t);
+  const plan = analysis();
+  plan.image_text = [{ source: 'Existing sign at the upper right', text: 'OPEN $& {{SCENE}}', policy: 'exact' }];
+  const result = await prepare(input, out, plan, 'rich');
+  const prompt = await readFile(result.prompt, 'utf8');
+  const boundary = prompt.indexOf('IMAGE TEXT DATA');
+  assert.ok(boundary > 0);
+  assert.ok(!prompt.slice(0, boundary).includes(plan.image_text[0].text));
+  assert.ok(prompt.slice(boundary).includes(plan.image_text[0].text));
+  const generated = join(directory, 'generated.png');
+  await png(generated, '#789');
+  await finish(out, generated);
+  const record = JSON.parse(await readFile(join(out, 'visual-review.json')));
+  assert.deepEqual(record.content_plan.image_text, [{ ...plan.image_text[0], status: 'not_run', evidence: '' }]);
+  for (const imageText of ['OPEN', [{ source: 'sign', text: '', policy: 'exact' }], [{ source: 'sign', text: 'OPEN', policy: 'invent' }]]) {
+    await assert.rejects(prepare(input, join(directory, 'invalid'), { ...analysis(), image_text: imageText }, 'rich'), /Image text/);
+  }
+  await assert.rejects(stat(join(directory, 'invalid')), { code: 'ENOENT' });
 });
 
 test('omitted drawing level waits for a choice before preparing any output', async t => {
   const { input, out, directory } = await fixture(t);
   const pending = await prepare(input, out, analysis());
   assert.equal(pending.status, 'awaiting_drawing_level');
-  assert.deepEqual(pending.options.map(option => option.value), ['medium', 'low', 'high']);
+  assert.deepEqual(pending.options.map(option => option.value), ['simple', 'rich']);
   assert.equal(pending.drawing_level, undefined);
   assert.equal(pending.directory, undefined);
   await assert.rejects(stat(out), { code: 'ENOENT' });
   const withoutImage = await prepare(join(directory, 'missing.png'), out, analysis());
   assert.equal(withoutImage.status, 'awaiting_drawing_level');
-  const selected = await prepare(input, out, analysis(), 'medium');
+  const selected = await prepare(input, out, analysis(), 'rich');
   assert.equal(selected.status, 'awaiting_generation');
-  assert.equal(JSON.parse(await readFile(join(out, 'manifest.json'))).drawing_level, 'medium');
+  assert.equal(JSON.parse(await readFile(join(out, 'manifest.json'))).drawing_level, 'rich');
 });
 
 test('all drawing levels change the prompt while preserving input and literal content notes', async t => {
   const { input, directory } = await fixture(t);
   const prompts = new Set(), inputHashes = new Set();
   const notes = scene + ' Literal tokens: $& {{LEVEL_GUIDANCE}} {{SCENE}}.';
-  for (const level of ['low', 'medium', 'high']) {
+  for (const level of ['simple', 'rich']) {
     const out = join(directory, level);
     const result = await prepare(input, out, analysis(notes), level);
     const manifest = JSON.parse(await readFile(join(out, 'manifest.json')));
@@ -113,7 +134,7 @@ test('all drawing levels change the prompt while preserving input and literal co
     prompts.add(prompt);
     inputHashes.add(manifest.input.sha256);
   }
-  assert.equal(prompts.size, 3);
+  assert.equal(prompts.size, 2);
   assert.equal(inputHashes.size, 1);
 });
 
@@ -123,16 +144,20 @@ test('invalid drawing levels fail before reserving an output directory', async t
     await assert.rejects(prepare(input, out, analysis(), level), /Drawing level/);
     await assert.rejects(stat(out), { code: 'ENOENT' });
   }
+  for (const level of ['low', 'medium', 'high']) {
+    await assert.rejects(prepare(input, out, analysis(), level), /was removed in 0\.4\.0/);
+    await assert.rejects(stat(out), { code: 'ENOENT' });
+  }
 });
 
 test('selected level waits for content analysis in API, CLI and demo before creating output', async t => {
   const { input, out } = await fixture(t);
-  const pending = await prepare(input, out, undefined, 'medium');
+  const pending = await prepare(input, out, undefined, 'rich');
   assert.equal(pending.status, 'awaiting_content_analysis');
-  assert.equal(pending.drawing_level, 'medium');
+  assert.equal(pending.drawing_level, 'rich');
   for (const [script, ...command] of [['scripts/workflow.mjs', 'prepare'], ['scripts/demo.mjs']]) {
     const { stdout } = await promisify(execFile)(process.execPath, [resolve(ROOT, script), ...command,
-      '--input', input, '--out', out, '--drawing-level', 'medium'], { cwd: tmpdir() });
+      '--input', input, '--out', out, '--drawing-level', 'rich'], { cwd: tmpdir() });
     assert.equal(JSON.parse(stdout).status, 'awaiting_content_analysis');
   }
   await assert.rejects(stat(out), { code: 'ENOENT' });
@@ -148,14 +173,14 @@ test('missing analysis stages and unsupported plan actions fail before preparati
   }
   invalid.push(analysis(scene, [{ source: '局部区域', importance: '附属信息', action: 'invent', depiction: '新增信息' }]));
   for (const candidate of invalid) {
-    await assert.rejects(prepare(input, out, candidate, 'medium'), /Analysis requires|Optional details require/);
+    await assert.rejects(prepare(input, out, candidate, 'rich'), /Analysis requires|Optional details require/);
     await assert.rejects(stat(out), { code: 'ENOENT' });
   }
 });
 
-test('level budgets select ranked optional groups while all core information stays in the prompt', async t => {
+test('both methods preserve ranked semantic selections without percentage quotas', async t => {
   const { input, directory } = await fixture(t);
-  for (const [level, selectedCount, target] of [['low', 0, 0.1], ['low', 1, 0.1], ['medium', 5, 0.5], ['high', 8, 0.8]]) {
+  for (const level of ['simple', 'rich']) for (const selectedCount of [0, 1, 5, 8, 10]) {
     const details = Array.from({ length: 10 }, (_, index) => ({
       source: `source-evidence-${index}`, importance: `ranked-contribution-${index}`,
       action: index < selectedCount ? (index % 2 ? 'retain' : 'simplify') : 'omit',
@@ -171,46 +196,45 @@ test('level budgets select ranked optional groups while all core information sta
     assert.ok(!prompt.includes('ranked-contribution-'));
     for (let index = 0; index < 10; index++) assert.equal(prompt.includes(`selected-feature-${index}`), index < selectedCount);
     assert.deepEqual(JSON.parse(await readFile(join(out, 'analysis.json'))), plan);
-    assert.equal(manifest.detail_budget.pool_group_count, 10);
-    assert.equal(manifest.detail_budget.selected_group_count, selectedCount);
-    assert.equal(manifest.detail_budget.selected_fraction, selectedCount / 10);
-    assert.equal(manifest.detail_budget.target_fraction, target);
+    assert.equal(manifest.detail_selection.pool_group_count, 10);
+    assert.equal(manifest.detail_selection.selected_group_count, selectedCount);
+    assert.equal(manifest.detail_selection.selected_fraction, selectedCount / 10);
+    assert.equal(manifest.detail_selection.interpretation, 'descriptive_inventory_without_a_quota');
+    assert.equal(manifest.detail_budget, undefined);
+    assert.equal(manifest.detail_selection.target_fraction, undefined);
+    assert.equal(manifest.detail_selection.target_group_count, undefined);
   }
 });
 
-test('a lower-priority selection, excess detail or omitted depiction cannot enter generation', async t => {
+test('a lower-priority selection or omitted depiction cannot enter generation', async t => {
   const { input, out } = await fixture(t);
   const details = Array.from({ length: 10 }, (_, index) => ({ source: `区域${index}`, importance: `贡献${index}`,
     action: index < 5 ? 'simplify' : 'omit', depiction: index < 5 ? `表达${index}` : '' }));
   const lowerPriority = structuredClone(details);
   [lowerPriority[0], lowerPriority[5]] = [lowerPriority[5], lowerPriority[0]];
-  await assert.rejects(prepare(input, out, analysis(scene, lowerPriority), 'medium'), /importance order/);
-  const excessive = structuredClone(details);
-  excessive[5] = { ...excessive[5], action: 'retain', depiction: '额外细节' };
-  await assert.rejects(prepare(input, out, analysis(scene, excessive), 'medium'), /group budget/);
-  await assert.rejects(prepare(input, out, analysis(scene, details), 'low'), /group budget/);
+  await assert.rejects(prepare(input, out, analysis(scene, lowerPriority), 'rich'), /importance order/);
   const omittedDepiction = structuredClone(details);
   omittedDepiction[9].depiction = '省略项的描述';
-  await assert.rejects(prepare(input, out, analysis(scene, omittedDepiction), 'medium'), /empty depiction/);
+  await assert.rejects(prepare(input, out, analysis(scene, omittedDepiction), 'rich'), /empty depiction/);
   await assert.rejects(stat(out), { code: 'ENOENT' });
 });
 
-test('small detail pools use discrete budgets and an empty pool keeps its measured fraction unknown', async t => {
+test('small and empty detail inventories retain descriptive selection counts', async t => {
   const { input, directory } = await fixture(t);
   const detail = { source: '局部', importance: '辅助贡献', action: 'retain', depiction: '粗略辨识笔画' };
-  for (const level of ['medium', 'high']) {
+  for (const level of ['simple', 'rich']) {
     const out = join(directory, level);
     await prepare(input, out, analysis(scene, [detail]), level);
-    const { detail_budget } = JSON.parse(await readFile(join(out, 'manifest.json')));
-    assert.equal(detail_budget.target_group_count, 1);
-    assert.equal(detail_budget.selected_fraction, 1);
+    const { detail_selection } = JSON.parse(await readFile(join(out, 'manifest.json')));
+    assert.equal(detail_selection.pool_group_count, 1);
+    assert.equal(detail_selection.selected_group_count, 1);
+    assert.equal(detail_selection.selected_fraction, 1);
   }
   const out = join(directory, 'empty');
-  await prepare(input, out, analysis(), 'low');
-  const { detail_budget } = JSON.parse(await readFile(join(out, 'manifest.json')));
-  assert.equal(detail_budget.pool_group_count, 0);
-  assert.equal(detail_budget.selected_fraction, null);
-  await assert.rejects(prepare(input, join(directory, 'excess'), analysis(scene, [detail]), 'low'), /group budget/);
+  await prepare(input, out, analysis(), 'simple');
+  const { detail_selection } = JSON.parse(await readFile(join(out, 'manifest.json')));
+  assert.equal(detail_selection.pool_group_count, 0);
+  assert.equal(detail_selection.selected_fraction, null);
 });
 
 test('finish verifies analysis integrity and creates an itemized review without claiming visual success', async t => {
@@ -219,7 +243,7 @@ test('finish verifies analysis integrity and creates an itemized review without 
     { source: '第一局部', importance: '较高贡献', action: 'simplify', depiction: '少量粗略特征' },
     { source: '第二局部', importance: '较低贡献', action: 'omit', depiction: '' },
   ]);
-  await prepare(input, out, plan, 'medium');
+  await prepare(input, out, plan, 'rich');
   const saved = await readFile(join(out, 'analysis.json'));
   await writeFile(join(out, 'analysis.json'), JSON.stringify(analysis('修改后的核心')));
   const generated = join(directory, 'generated.png');
@@ -234,7 +258,7 @@ test('finish verifies analysis integrity and creates an itemized review without 
   assert.deepEqual(review.content_plan.optional_details.map(item => item.action), ['simplify', 'omit']);
   assert.ok([...review.content_plan.core_information, ...review.content_plan.optional_details].every(item => item.status === 'not_run'));
   assert.equal(review.overall, 'not_run');
-  assert.equal(review.detail_budget.selected_fraction, 0.5);
+  assert.equal(review.detail_selection.selected_fraction, 0.5);
 });
 
 test('existing directories and paths outside the output roots stay untouched', async t => {
@@ -257,27 +281,63 @@ test('output symlinks cannot redirect writes outside the output range', async t 
   await assert.rejects(reserveOutput(join(link, 'escaped')), /escapes/);
 });
 
-test('finish rejects wrong aspect ratio and preserves the run for a user-requested revision', async t => {
+test('finish saves the original before rejecting its aspect ratio and records export failure', async t => {
   const { input, out, directory } = await fixture(t);
-  await prepare(input, out, analysis(), 'medium');
+  await prepare(input, out, analysis(), 'rich');
   const generated = join(directory, 'wrong.png');
   await png(generated, '#abd', 90, 90);
   await assert.rejects(finish(out, generated), /aspect ratio/);
-  assert.equal(JSON.parse(await readFile(join(out, 'manifest.json'))).status, 'awaiting_generation');
+  const manifest = JSON.parse(await readFile(join(out, 'manifest.json')));
+  assert.equal(manifest.status, 'export_failed');
+  assert.match(manifest.export_error.message, /aspect ratio/);
+  assert.deepEqual(await readFile(join(out, 'generated-original.bin')), await readFile(generated));
+  await assert.rejects(stat(join(out, 'image.png')), { code: 'ENOENT' });
+});
+
+test('failed export recovers from its saved original using explicitly selected paper padding', async t => {
+  const { input, out, directory } = await fixture(t);
+  await prepare(input, out, analysis(), 'simple');
+  const generated = join(directory, 'square.png');
+  await png(generated, '#abd', 90, 90);
+  const original = await readFile(generated);
+  await assert.rejects(finish(out, generated), /aspect ratio/);
+  await rm(generated);
+  const result = await finish(out, undefined, { padToSource: true });
+  assert.equal(result.status, 'awaiting_visual_review');
+  assert.deepEqual(await readFile(result.original), original);
+  const checks = JSON.parse(await readFile(join(out, 'checks.json')));
+  assert.deepEqual([checks.width, checks.height], [135, 90]);
+  assert.equal(checks.presentation.mode, 'paper_padding');
+  assert.deepEqual(checks.presentation.padding, { left: 22, right: 23, top: 0, bottom: 0 });
+  const { data, info } = await sharp(result.image).raw().toBuffer({ resolveWithObject: true });
+  const pixel = x => [...data.subarray((45 * info.width + x) * info.channels, (45 * info.width + x) * info.channels + 3)];
+  assert.deepEqual(pixel(0), [250, 247, 239]);
+  assert.deepEqual(pixel(22), [170, 187, 221]);
+  assert.deepEqual(pixel(111), [170, 187, 221]);
+  assert.deepEqual(pixel(112), [250, 247, 239]);
+  const manifest = JSON.parse(await readFile(join(out, 'manifest.json')));
+  assert.equal(manifest.export_options.pad_to_source, true);
+  assert.equal(manifest.export_error, undefined);
 });
 
 test('finish detects source/prompt tampering and unchanged output', async t => {
-  const { input, out } = await fixture(t);
-  const result = await prepare(input, out, analysis(), 'medium');
-  await assert.rejects(finish(out, result.input), /unchanged input/);
-  await assert.rejects(finish(out, result.generation_reference), /unchanged generation reference/);
+  const { input, directory } = await fixture(t);
+  const plan = analysis(scene, [{ source: 'Selected region', importance: 'Supporting cue', action: 'retain', depiction: 'Blue patch',
+    guide_marks: [{ ...mark, fill: '#0000ff' }] }]);
+  for (const [key, message] of [['input', /unchanged input/], ['generation_reference', /unchanged generation reference/], ['core_reference', /unchanged core reference/]]) {
+    const out = join(directory, key);
+    const result = await prepare(input, out, plan, 'rich');
+    await assert.rejects(finish(out, result[key]), message);
+  }
+  const out = join(directory, 'tampered');
+  const result = await prepare(input, out, analysis(), 'rich');
   await writeFile(join(out, 'prompt.txt'), 'unexpected replacement');
   await assert.rejects(finish(out, result.input), /Prepared input or prompt changed/);
 });
 
 test('successful export verifies pixels but leaves semantic review pending', async t => {
   const { input, out, directory } = await fixture(t);
-  await prepare(input, out, analysis(), 'high');
+  await prepare(input, out, analysis(), 'rich');
   const generated = join(directory, 'generated.webp');
   await sharp({ create: { width: 180, height: 120, channels: 3, background: '#789' } }).webp().toFile(generated);
   const result = await finish(out, generated);
@@ -290,38 +350,46 @@ test('successful export verifies pixels but leaves semantic review pending', asy
   assert.equal(checks.opaque, true);
   const review = JSON.parse(await readFile(join(out, 'visual-review.json')));
   assert.equal(review.overall, 'not_run');
-  assert.equal(review.drawing_level, 'high');
-  assert.equal(review.checks.drawing_ability_matches_selection.status, 'not_run');
-  assert.equal(review.checks.detail_quality_matches_selection.status, 'not_run');
+  assert.equal(review.drawing_level, 'rich');
+  assert.equal(review.checks.drawing_method_matches_selection.status, 'not_run');
+  assert.equal(review.checks.detail_simplification_matches_selection.status, 'not_run');
   assert.equal(review.checks.background_abstraction_matches_selection.status, 'not_run');
-  assert.equal(review.checks.incidental_text_matches_selection.status, 'not_run');
+  assert.equal(review.checks.image_text_matches_source_and_request.status, 'not_run');
   assert.equal(review.checks.core_information_matches_plan.status, 'not_run');
   assert.equal(review.checks.optional_detail_retention_matches_plan.status, 'not_run');
   assert.equal(review.checks.detail_priority_matches_plan.status, 'not_run');
-  assert.equal(review.detail_budget.selected_fraction, null);
+  assert.equal(review.detail_selection.selected_fraction, null);
   assert.equal(review.content_plan.core_information[0].status, 'not_run');
   assert.equal(review.user_acceptance, 'pending');
-  await assert.rejects(finish(out, generated), /awaiting_generation/);
+  assert.deepEqual(await readFile(result.original), await readFile(generated));
+  const record = await readFile(join(out, 'visual-review.json'));
+  const repeated = await finish(out);
+  assert.equal(repeated.status, 'awaiting_visual_review');
+  assert.equal(repeated.image, result.image);
+  assert.deepEqual(await readFile(join(out, 'visual-review.json')), record);
+  const other = join(directory, 'different.png');
+  await png(other, '#abc', 180, 120);
+  await assert.rejects(finish(out, other), /Generated original differs/);
+  assert.deepEqual(await readFile(result.original), await readFile(generated));
 });
 
-test('exporting a legacy run preserves its unspecified drawing level', async t => {
+test('exporting a legacy run requires its original workflow and preserves the run', async t => {
   const { input, out, directory } = await fixture(t);
-  await prepare(input, out, analysis(), 'medium');
+  await prepare(input, out, analysis(), 'rich');
   const manifestPath = join(out, 'manifest.json');
   const manifest = JSON.parse(await readFile(manifestPath));
   manifest.skill.version = '0.1.0';
   delete manifest.drawing_level;
   delete manifest.content_analysis;
-  delete manifest.detail_budget;
+  delete manifest.detail_selection;
   await writeFile(manifestPath, JSON.stringify(manifest));
   const generated = join(directory, 'generated.png');
   await png(generated, '#abd', 180, 120);
-  await finish(out, generated);
-  const review = JSON.parse(await readFile(join(out, 'visual-review.json')));
-  assert.equal(review.drawing_level, null);
-  assert.equal(review.detail_budget, null);
-  assert.deepEqual(review.content_plan, { core_information: [], optional_details: [] });
-  assert.equal(JSON.parse(await readFile(manifestPath)).drawing_level, undefined);
+  const saved = await readFile(manifestPath);
+  await assert.rejects(finish(out, generated), /requires a 0\.4\.0 run/);
+  assert.deepEqual(await readFile(manifestPath), saved);
+  await assert.rejects(stat(join(out, 'generated-original.bin')), { code: 'ENOENT' });
+  await assert.rejects(stat(join(out, 'image.png')), { code: 'ENOENT' });
 });
 
 test('CLI prepares and finishes inside the skill from different working directories', async t => {
@@ -329,10 +397,10 @@ test('CLI prepares and finishes inside the skill from different working director
   const notes = join(directory, 'analysis 中文.json');
   await writeFile(notes, JSON.stringify(analysis()));
   const { stdout } = await promisify(execFile)(process.execPath, [resolve(ROOT, 'scripts/workflow.mjs'),
-    'prepare', '--input', input, '--out', relative(ROOT, out), '--analysis', notes, '--drawing-level', 'low'], { cwd: tmpdir() });
+    'prepare', '--input', input, '--out', relative(ROOT, out), '--analysis', notes, '--drawing-level', 'simple'], { cwd: tmpdir() });
   assert.equal(JSON.parse(stdout).status, 'awaiting_generation');
-  assert.equal(JSON.parse(stdout).drawing_level, 'low');
-  assert.equal(JSON.parse(await readFile(join(out, 'manifest.json'))).drawing_level, 'low');
+  assert.equal(JSON.parse(stdout).drawing_level, 'simple');
+  assert.equal(JSON.parse(await readFile(join(out, 'manifest.json'))).drawing_level, 'simple');
   assert.ok((await readFile(join(out, 'prompt.txt'), 'utf8')).includes(scene));
   const generated = join(directory, 'generated.png');
   await png(generated, '#abc');
@@ -362,7 +430,7 @@ test('CLI and demo wait for drawing-level selection without preparing output', a
       '--input', input, '--analysis', notes, '--out', out], { cwd: tmpdir() });
     const pending = JSON.parse(stdout);
     assert.equal(pending.status, 'awaiting_drawing_level');
-    assert.deepEqual(pending.options.map(option => option.value), ['medium', 'low', 'high']);
+    assert.deepEqual(pending.options.map(option => option.value), ['simple', 'rich']);
     assert.equal(pending.prompt, undefined);
     await assert.rejects(stat(out), { code: 'ENOENT' });
   }
@@ -371,9 +439,9 @@ test('CLI and demo wait for drawing-level selection without preparing output', a
 test('demo uses each supplied image and notes independently and forwards the selected level', async t => {
   const { directory } = await fixture(t);
   const cases = [
-    { name: 'a', size: [90, 60], color: '#c43', notes: '深色小区域位于左上，大面积留白。', level: 'medium' },
-    { name: 'b', size: [60, 90], color: '#47a', notes: '多个区域相互遮挡，重复结构横向延伸。', level: 'low' },
-    { name: 'c', size: [80, 80], color: '#6a8', notes: '细碎笔画密集分布，主色由中心向外变化。', level: 'high' },
+    { name: 'a', size: [90, 60], color: '#c43', notes: '深色小区域位于左上，大面积留白。', level: 'rich' },
+    { name: 'b', size: [60, 90], color: '#47a', notes: '多个区域相互遮挡，重复结构横向延伸。', level: 'simple' },
+    { name: 'c', size: [80, 80], color: '#6a8', notes: '细碎笔画密集分布，主色由中心向外变化。', level: 'rich' },
   ];
   const inputHashes = new Set();
   for (const item of cases) {
@@ -407,7 +475,7 @@ test('the generation reference contains exactly planned marks and omitted eviden
     { source: 'selected source evidence', importance: 'higher', action: 'retain', depiction: 'selected cue', guide_marks: [selected] },
     { source: 'omitted private inscription', importance: 'lower', action: 'omit', depiction: '', guide_marks: [] },
   ]);
-  const result = await prepare(input, out, plan, 'medium');
+  const result = await prepare(input, out, plan, 'rich');
   const guide = await sharp(result.generation_reference).raw().toBuffer({ resolveWithObject: true });
   const at = (x, y) => [...guide.data.subarray((y * guide.info.width + x) * guide.info.channels, (y * guide.info.width + x) * guide.info.channels + 3)];
   assert.deepEqual(at(20, 20), [195, 75, 63]);
@@ -416,6 +484,8 @@ test('the generation reference contains exactly planned marks and omitted eviden
   const manifest = JSON.parse(await readFile(join(out, 'manifest.json')));
   assert.equal(manifest.generation_reference.mark_count, 2);
   assert.equal(manifest.core_reference.mark_count, 1);
+  assert.deepEqual(result.generation_images, [result.input, result.generation_reference]);
+  assert.deepEqual(manifest.generation_images, ['input.png', 'plan-reference.png']);
   const core = await sharp(result.core_reference).raw().toBuffer({ resolveWithObject: true });
   const corePixel = [...core.data.subarray((12 * core.info.width + 65) * core.info.channels, (12 * core.info.width + 65) * core.info.channels + 3)];
   assert.deepEqual(corePixel, [250, 247, 239]);
@@ -425,10 +495,10 @@ test('the generation reference contains exactly planned marks and omitted eviden
   assert.equal(JSON.parse(await readFile(join(out, 'analysis.json'))).optional_details[1].source, 'omitted private inscription');
 });
 
-test('minimum internal structural cues remain in the core-only reference across all detail budgets', async t => {
+test('minimum internal structural cues remain in the core-only reference across both methods', async t => {
   const { input, directory } = await fixture(t);
   const hashes = new Set();
-  for (const [level, count] of [['low', 0], ['medium', 5], ['high', 8]]) {
+  for (const [level, count] of [['simple', 0], ['rich', 8]]) {
     const plan = analysis(scene, Array.from({ length: 10 }, (_, i) => ({
       source: `Accessory group ${i}`, importance: `Rank ${i}`,
       action: i < count ? 'simplify' : 'omit', depiction: i < count ? 'Accessory mark' : '',
@@ -442,7 +512,7 @@ test('minimum internal structural cues remain in the core-only reference across 
     const { data, info } = await sharp(result.core_reference).raw().toBuffer({ resolveWithObject: true });
     const offset = (21 * info.width + 31) * info.channels;
     assert.deepEqual([...data.subarray(offset, offset + 3)], [18, 52, 86]);
-    assert.equal(manifest.detail_budget.selected_group_count, count);
+    assert.equal(manifest.detail_selection.selected_group_count, count);
   }
   assert.equal(hashes.size, 1);
 });
@@ -453,15 +523,15 @@ test('invalid guide primitives and marks on omitted groups fail before creating 
     [{ ...mark, box: [0.9, 0.2, 0.5, 0.4] }], [{ type: 'line', points: [[0, 0], [1, 1]], stroke: '#000000', width: 0 }]]) {
     const plan = analysis();
     plan.core_information[0].guide_marks = invalid;
-    await assert.rejects(prepare(input, out, plan, 'low'), /Guide/);
+    await assert.rejects(prepare(input, out, plan, 'simple'), /Guide/);
   }
-  await assert.rejects(prepare(input, out, analysis(scene, [{ source: 'region', importance: 'low', action: 'omit', depiction: '', guide_marks: [mark] }]), 'low'), /empty guide marks/);
+  await assert.rejects(prepare(input, out, analysis(scene, [{ source: 'region', importance: 'low', action: 'omit', depiction: '', guide_marks: [mark] }]), 'simple'), /empty guide marks/);
   await assert.rejects(stat(out), { code: 'ENOENT' });
 });
 
 test('export checks the task-derived reference integrity', async t => {
   const { input, out, directory } = await fixture(t);
-  const result = await prepare(input, out, analysis(), 'medium');
+  const result = await prepare(input, out, analysis(), 'rich');
   const generated = join(directory, 'generated.png');
   await png(generated, '#789');
   const core = await readFile(result.core_reference);
@@ -479,7 +549,7 @@ async function assessedFixture(t) {
     { source: 'higher group', importance: 'higher', action: 'retain', depiction: 'planned mark' },
     { source: 'lower group', importance: 'lower', action: 'omit', depiction: '' },
   ]);
-  await prepare(input, out, plan, 'medium');
+  await prepare(input, out, plan, 'rich');
   const generated = join(directory, 'generated.png');
   await png(generated, '#789');
   await finish(out, generated);
@@ -496,7 +566,7 @@ test('itemized review measures actual groups and leaves user acceptance pending'
   await writeFile(path, JSON.stringify(record));
   const source = await readFile(join(out, 'input.png'));
   await png(join(out, 'input.png'), '#456');
-  await assert.rejects(review(out), /source or reviewed image changed/);
+  await assert.rejects(review(out), /source, reviewed image or technical checks changed/);
   await writeFile(join(out, 'input.png'), source);
   const result = await review(out);
   assert.equal(result.status, 'agent_review_pass');

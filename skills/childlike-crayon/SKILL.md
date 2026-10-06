@@ -4,7 +4,7 @@ description: 将内容图片重绘为儿童蜡笔画，保护主体身份、动�
 metadata:
   version: "0.4.0"
   status: draft
-  validation_scope: "两档与导出改造仅完成静态审查，运行与成图效果待后续验证"
+  validation_scope: "0.4.0已获主分支与release采用确认；独立安装与33项技术回归通过，当前成图视觉回归待补充"
 ---
 
 # 儿童蜡笔画
@@ -57,6 +57,6 @@ npm run finish -- --run "runs/task-01/render" --generated "/absolute/path/genera
 
 旧 `low / medium / high` 参数返回明确迁移错误，要求重新选择两档；`medium` 没有等价档位。旧运行资料及用户内容保留，处理旧运行使用对应Git版本；当前入口只写入0.4.0运行。完整迁移说明见 [约定](references/requirements.md#接口迁移)。
 
-既有 `demo` 入口复用准备流程；缺少输入、档位或分析分别保持等待。维护时按需读取 [共享提示词](references/prompt-template.txt)、[评审模板](references/review.template.json)、[StyleSpec](references/style-spec.json)、[来源与依赖](references/sources.md) 和 [历史验证记录](references/validation.md)。当前0.4.0完成代码与文档静态审查；历史图与报告按各自版本、R1/R2批次保存，运行与成图验证由后续测试承担。
+既有 `demo` 入口复用准备流程；缺少输入、档位或分析分别保持等待。维护时按需读取 [共享提示词](references/prompt-template.txt)、[评审模板](references/review.template.json)、[StyleSpec](references/style-spec.json)、[来源与依赖](references/sources.md) 和 [历史验证记录](references/validation.md)。0.4.0已获用户主分支与release采用确认，独立安装与33项技术回归通过；当前版本的新成图与视觉回归待补充。历史图与报告按各自版本、R1/R2批次保存。
 
 图片和运行记录保存在本地忽略目录，长期评测、训练与公开展示按各自授权执行。交付以本目录Git文件及明确纳入交付的新文件为准；回退保护当前未提交修改。
