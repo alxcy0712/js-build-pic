@@ -8,13 +8,13 @@ import test from 'node:test';
 import sharp from 'sharp';
 import { finish, prepare, readImage, reserveOutput, review, ROOT } from '../scripts/workflow.mjs';
 
-const mark = { type: 'rect', box: [0.1, 0.2, 0.5, 0.4], fill: '#c34b3f' };
+const mark = { type: 'rect', draw_order: 0, box: [0.1, 0.2, 0.5, 0.4], fill: '#c34b3f' };
 const scene = '按当前输入保留核心视觉结构、布局关系与主色。';
 function analysis(notes = scene, details = []) {
   return {
     observation: '主要区域的相对位置、主色关系和留白按当前输入表达。',
     core_information: [{ source: '当前输入中的主要色区。', role: '承载整体视觉组织。', depiction: notes, guide_marks: [mark] }],
-    optional_details: details.map(item => ({ guide_marks: item.action === 'omit' ? [] : [mark], ...item })),
+    optional_details: details.map((item, index) => ({ guide_marks: item.action === 'omit' ? [] : [{ ...mark, draw_order: index + 10 }], ...item })),
     grouping_check: '组合的信息保有整体组织与核心含义。',
     plan_check: '原图证据、作用判断、取舍顺序和画法已核对。',
   };
@@ -323,7 +323,7 @@ test('failed export recovers from its saved original using explicitly selected p
 test('finish detects source/prompt tampering and unchanged output', async t => {
   const { input, directory } = await fixture(t);
   const plan = analysis(scene, [{ source: 'Selected region', importance: 'Supporting cue', action: 'retain', depiction: 'Blue patch',
-    guide_marks: [{ ...mark, fill: '#0000ff' }] }]);
+    guide_marks: [{ ...mark, draw_order: 10, fill: '#0000ff' }] }]);
   for (const [key, message] of [['input', /unchanged input/], ['generation_reference', /unchanged generation reference/], ['core_reference', /unchanged core reference/]]) {
     const out = join(directory, key);
     const result = await prepare(input, out, plan, 'rich');
@@ -378,7 +378,7 @@ test('exporting a legacy run requires its original workflow and preserves the ru
   await prepare(input, out, analysis(), 'rich');
   const manifestPath = join(out, 'manifest.json');
   const manifest = JSON.parse(await readFile(manifestPath));
-  manifest.skill.version = '0.1.0';
+  manifest.skill.version = '0.4.0';
   delete manifest.drawing_level;
   delete manifest.content_analysis;
   delete manifest.detail_selection;
@@ -386,7 +386,7 @@ test('exporting a legacy run requires its original workflow and preserves the ru
   const generated = join(directory, 'generated.png');
   await png(generated, '#abd', 180, 120);
   const saved = await readFile(manifestPath);
-  await assert.rejects(finish(out, generated), /requires a 0\.4\.0 run/);
+  await assert.rejects(finish(out, generated), /requires a 0\.5\.0 run/);
   assert.deepEqual(await readFile(manifestPath), saved);
   await assert.rejects(stat(join(out, 'generated-original.bin')), { code: 'ENOENT' });
   await assert.rejects(stat(join(out, 'image.png')), { code: 'ENOENT' });
@@ -470,7 +470,7 @@ test('demo uses each supplied image and notes independently and forwards the sel
 
 test('the generation reference contains exactly planned marks and omitted evidence stays local', async t => {
   const { input, out } = await fixture(t);
-  const selected = { type: 'ellipse', box: [0.65, 0.1, 0.2, 0.2], fill: '#00ff00' };
+  const selected = { type: 'ellipse', draw_order: 10, box: [0.65, 0.1, 0.2, 0.2], fill: '#00ff00' };
   const plan = analysis(scene, [
     { source: 'selected source evidence', importance: 'higher', action: 'retain', depiction: 'selected cue', guide_marks: [selected] },
     { source: 'omitted private inscription', importance: 'lower', action: 'omit', depiction: '', guide_marks: [] },
@@ -478,12 +478,15 @@ test('the generation reference contains exactly planned marks and omitted eviden
   const result = await prepare(input, out, plan, 'rich');
   const guide = await sharp(result.generation_reference).raw().toBuffer({ resolveWithObject: true });
   const at = (x, y) => [...guide.data.subarray((y * guide.info.width + x) * guide.info.channels, (y * guide.info.width + x) * guide.info.channels + 3)];
-  assert.deepEqual(at(20, 20), [195, 75, 63]);
-  assert.deepEqual(at(65, 12), [0, 255, 0]);
+  assert.ok(at(20, 20)[0] > at(20, 20)[1] + 50);
+  assert.ok(at(65, 12)[1] > at(65, 12)[0] + 50);
   assert.deepEqual(at(85, 55), [250, 247, 239]);
   const manifest = JSON.parse(await readFile(join(out, 'manifest.json')));
   assert.equal(manifest.generation_reference.mark_count, 2);
   assert.equal(manifest.core_reference.mark_count, 1);
+  assert.equal(manifest.guide_rendering.plan.engine, 'crayon-guide-v1');
+  assert.equal(manifest.guide_rendering.plan.seed, 20261006);
+  assert.equal(manifest.execution.seed, null);
   assert.deepEqual(result.generation_images, [result.input, result.generation_reference]);
   assert.deepEqual(manifest.generation_images, ['input.png', 'plan-reference.png']);
   const core = await sharp(result.core_reference).raw().toBuffer({ resolveWithObject: true });
@@ -502,10 +505,10 @@ test('minimum internal structural cues remain in the core-only reference across 
     const plan = analysis(scene, Array.from({ length: 10 }, (_, i) => ({
       source: `Accessory group ${i}`, importance: `Rank ${i}`,
       action: i < count ? 'simplify' : 'omit', depiction: i < count ? 'Accessory mark' : '',
-      guide_marks: i < count ? [{ type: 'rect', box: [0.8, 0.1, 0.1, 0.1], fill: '#0000ff' }] : [],
+      guide_marks: i < count ? [{ type: 'rect', draw_order: i + 10, box: [0.8, 0.1, 0.1, 0.1], fill: '#0000ff' }] : [],
     })));
     plan.core_information.push({ source: 'Internal division inside the main mass', role: 'Minimum source structure', depiction: 'One rough internal cue',
-      guide_marks: [{ type: 'rect', box: [0.3, 0.3, 0.1, 0.1], fill: '#123456' }] });
+      guide_marks: [{ type: 'rect', draw_order: 1, box: [0.3, 0.3, 0.1, 0.1], fill: '#123456' }] });
     const result = await prepare(input, join(directory, level), plan, level);
     const manifest = JSON.parse(await readFile(join(result.directory, 'manifest.json')));
     hashes.add(manifest.core_reference.sha256);

@@ -4,6 +4,8 @@
 
 基础规范、工作流程、风格索引和任务模板已建立。当前候选 skills 已有实际样例与验证记录；能力范围、执行方式和验收状态按风格索引读取。
 
+来源与作者见[致谢清单](ACKNOWLEDGMENTS.md)。儿童蜡笔的[使用与按需示范](skills/childlike-crayon/references/usage-evidence.md)说明执行方式和参考稿生成命令；评测结论与适用范围集中保存在该skill的验证记录中。
+
 ## 开始使用
 
 维护本项目时，Agent 从 [AGENTS.md](AGENTS.md) 开始，再读取 [当前状态](context/project-state.md) 和 [风格索引](styles/index.json)。新建风格按 [创建流程](playbooks/create-skill.md) 执行；项目内普通出图按 [出图流程](playbooks/render-image.md) 执行。
@@ -44,6 +46,7 @@ npm run test:standalone
 | [scripts/check-standalone.mjs](scripts/check-standalone.mjs) | 项目外独立安装、测试和演示 |
 | [scripts/delivery-files.mjs](scripts/delivery-files.mjs) | Git 交付清单与严格复制 |
 | [research/initial-landscape.md](research/initial-landscape.md) | 初次联网调研、来源和待核验项目 |
+| [ACKNOWLEDGMENTS.md](ACKNOWLEDGMENTS.md) | 可核验的作者、规范、依赖与素材贡献 |
 | [context/project-state.md](context/project-state.md) | 下一次对话需要的状态摘要 |
 | [context/decisions.md](context/decisions.md) | 已确认约定与初始化选择 |
 

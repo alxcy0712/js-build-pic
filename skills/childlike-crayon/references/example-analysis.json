@@ -1,0 +1,49 @@
+{
+  "observation": "自制3:2平面内容图。橙墙红屋顶的小屋占中央；两扇蓝窗与蓝门，右后方一棵绿树，前景四柱黄色矮栏，浅蓝天空与绿色地面。保持小屋占比和四周留白。",
+  "core_information": [
+    { "source": "全图天空及下方地面", "role": "主色与场景组织", "depiction": "Pale blue sky above a broad muted green ground strip, with the original empty margins.", "guide_marks": [
+      { "type": "rect", "draw_order": 0, "box": [0, 0, 1, 1], "fill": "#dce9ef" },
+      { "type": "rect", "draw_order": 5, "box": [0, 0.78, 1, 0.22], "fill": "#91aa76" }
+    ] },
+    { "source": "中央橙墙与红三角屋顶", "role": "小屋身份与形体", "depiction": "One squat orange house centered at the same scale, with a broad triangular rust-red roof.", "guide_marks": [
+      { "type": "rect", "draw_order": 20, "box": [0.28, 0.35, 0.43, 0.43], "fill": "#d8a16e", "stroke": "#72523d", "width": 0.006 },
+      { "type": "polygon", "draw_order": 21, "points": [[0.23, 0.36], [0.485, 0.13], [0.76, 0.36]], "fill": "#bf5a45", "stroke": "#72523d", "width": 0.008 }
+    ] },
+    { "source": "正面分开的两扇蓝窗", "role": "关键开口与数量", "depiction": "Two separate blue square windows, left and right, with clear wall space between them.", "guide_marks": [
+      { "type": "rect", "draw_order": 22, "box": [0.33, 0.44, 0.09, 0.1], "fill": "#769cbd", "stroke": "#72523d", "width": 0.008 },
+      { "type": "rect", "draw_order": 23, "box": [0.57, 0.44, 0.09, 0.1], "fill": "#769cbd", "stroke": "#72523d", "width": 0.008 }
+    ] },
+    { "source": "中间蓝门，下部被栏杆遮挡", "role": "入口、接地与真实遮挡", "depiction": "A central blue door reaching the ground; its lower part is covered by the front yellow rail. Keep the small dark knob on the visible door.", "guide_marks": [
+      { "type": "rect", "draw_order": 24, "box": [0.45, 0.57, 0.11, 0.21], "fill": "#608cad", "stroke": "#72523d", "width": 0.008 },
+      { "type": "ellipse", "draw_order": 25, "box": [0.533, 0.665, 0.012, 0.018], "fill": "#443b35" }
+    ] },
+    { "source": "右后方绿树，树冠左下部被房屋遮挡", "role": "前后关系与主色", "depiction": "One round green tree behind the house on the right; the left lower canopy is hidden by the roof and wall. Its visible trunk stands to the right and reaches the ground.", "guide_marks": [
+      { "type": "rect", "draw_order": 10, "box": [0.755, 0.3, 0.035, 0.48], "fill": "#937356" },
+      { "type": "ellipse", "draw_order": 11, "box": [0.65, 0.12, 0.25, 0.37], "fill": "#5e8b58" }
+    ] },
+    { "source": "前景四柱黄色矮栏", "role": "前景组织、连接与遮挡", "depiction": "One broad yellow horizontal fence rail joined to four upright posts in front of the lower house and door.", "guide_marks": [
+      { "type": "rect", "draw_order": 40, "box": [0.17, 0.73, 0.64, 0.035], "fill": "#dfbc64", "stroke": "#a88b4f", "width": 0.004 },
+      { "type": "rect", "draw_order": 41, "box": [0.18, 0.68, 0.026, 0.17], "fill": "#dfbc64" },
+      { "type": "rect", "draw_order": 42, "box": [0.37, 0.68, 0.026, 0.17], "fill": "#dfbc64" },
+      { "type": "rect", "draw_order": 43, "box": [0.57, 0.68, 0.026, 0.17], "fill": "#dfbc64" },
+      { "type": "rect", "draw_order": 44, "box": [0.77, 0.68, 0.026, 0.17], "fill": "#dfbc64" }
+    ] }
+  ],
+  "optional_details": [
+    { "source": "左侧一朵浅色云", "importance": "补充天气线索，语义贡献较高", "action": "simplify", "depiction": "One broad pale cloud at upper left, behind all objects.", "guide_marks": [
+      { "type": "ellipse", "draw_order": 2, "box": [0.05, 0.16, 0.23, 0.12], "fill": "#faf7ef" }
+    ] },
+    { "source": "三角屋顶内两条短横线", "importance": "少量材质线索", "action": "simplify", "depiction": "Two short coarse horizontal tile strokes inside the red roof.", "guide_marks": [
+      { "type": "line", "draw_order": 30, "points": [[0.43, 0.23], [0.54, 0.23]], "stroke": "#8c4639", "width": 0.006 },
+      { "type": "line", "draw_order": 31, "points": [[0.37, 0.3], [0.62, 0.3]], "stroke": "#8c4639", "width": 0.006 }
+    ] },
+    { "source": "地面左下三笔草叶", "importance": "次要场景线索", "action": "simplify", "depiction": "Three short grass blades in the lower left ground area.", "guide_marks": [
+      { "type": "line", "draw_order": 50, "points": [[0.1, 0.94], [0.08, 0.88]], "stroke": "#526f42", "width": 0.006 },
+      { "type": "line", "draw_order": 51, "points": [[0.1, 0.94], [0.105, 0.865]], "stroke": "#526f42", "width": 0.006 },
+      { "type": "line", "draw_order": 52, "points": [[0.1, 0.94], [0.13, 0.89]], "stroke": "#526f42", "width": 0.006 }
+    ] }
+  ],
+  "image_text": [],
+  "grouping_check": "两档共享房屋、窗门、树、地面和前景栏杆；云、屋顶材质线与草叶按贡献排列。实际层次单独由draw_order记录。",
+  "plan_check": "参考稿核对房屋占比、两窗分离、门与地面连接、树在屋后、栏杆在门前及四柱连接。示范内容由本项目独立构造。"
+}

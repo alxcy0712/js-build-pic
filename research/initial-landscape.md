@@ -61,4 +61,10 @@
 
 后续执行的来源、版本与许可核验见 [马赛克数字艺术来源说明](../skills/mosaic-digital-art/references/sources.md)；本文件保留初始化时的调研范围与结论。
 
+## 2026-10-06 儿童蜡笔参考稿研究
+
+用户将[花叔的huashu-art-motion](https://github.com/alchaincyf/huashu-art-motion/tree/445c0752a7d9dbbf7262519e9e62842bfcb040d6)研究纳入本次改进范围，公开提交为 `445c0752a7d9dbbf7262519e9e62842bfcb040d6`，已读取21份公开文本。研究范围为源码与方法文档；外部项目运行与画廊目视检查保留未测状态。方法启发包括画材过程、局部尺度、结构保护及做法与证据配对。
+
+作者为花叔 / Huashu，GitHub账号alchaincyf。原仓库代码与文档采用MIT，字体、笔顺数据与作者角色各有独立范围。本项目从自己的guide接口独立编写蜡笔机制，使用既有锁定sharp；此次新增外部运行依赖、字体与素材数量为0。可核验的具体关联见[项目致谢](../ACKNOWLEDGMENTS.md)与[随包来源](../skills/childlike-crayon/references/sources.md)。
+
 2026-10-02 新增风格家族的同类产品、公开 skills、名称线索、CC0 样例及依赖核查，见 [儿童蜡笔画来源说明](../skills/childlike-crayon/references/sources.md)。对应生成与检查证据保存在该 skill 的验证资料中。

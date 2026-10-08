@@ -15,7 +15,7 @@
       "name": "儿童蜡笔画",
       "description": "将内容图片重绘为儿童蜡笔画，保留核心视觉结构、布局与主色。",
       "status": "draft",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "entrypoint": "skills/childlike-crayon/SKILL.md",
       "requirements_ref": "skills/childlike-crayon/references/requirements.md"
     },

@@ -2,7 +2,7 @@
   "schema_version": "0.1.0",
   "task_mode": "IMPROVE_SKILL",
   "skill_id": "childlike-crayon",
-  "skill_version": "0.4.0",
+  "skill_version": "0.5.0",
   "variant_id": "naive-source-colors",
   "family": "儿童蜡笔画",
   "medium": "wax-crayon",
@@ -69,11 +69,11 @@
     }
   },
   "user_statements": [
-    "用户2026-10-05要求将三档收敛为简笔蜡笔、丰富蜡笔，每次绘画请求明确确认",
-    "两档共享核心内容，简化改变表达复杂度，保留主体身份、动作、结构及构图",
-    "内部规划术语与画面文字隔离，关键文字按语义重要性保留",
-    "修复当前代码中的动画识别、导出恢复及安全写入缺陷，保存原始生成结果",
-    "本轮只实施技能、代码及必要文档并静态审查，测试、构建、生图及基准测试由后续测试方负责"
+    "保留已确认儿童蜡笔定义与原图主色",
+    "把内容重要度与绘制顺序分别表达",
+    "小范围独立开发蜡笔画法机制，从本项目出发设计",
+    "统一当前状态，提供直观使用证据，感谢有证据的参考来源",
+    "0.4.0外部附件效果已达到目标；原ZIP及全部解压资料保留在项目外"
   ],
   "field_status": {
     "core_style": "user_confirmed",
@@ -82,7 +82,7 @@
     "drawing_levels": "explicit_two_methods",
     "drawing_level": "awaiting_choice_for_each_request",
     "drawing_level_selection": "explicit_ask_and_wait",
-    "visual_acceptance": "pending_post_change_validation",
+    "visual_acceptance": "pending_for_0.5.0",
     "prompt_scope": "current_source_and_semantic_plan",
     "technical_input_limits": "existing_implementation_defaults",
     "retry_cap": "explicit_zero_automatic_generation_retries",
@@ -90,11 +90,11 @@
     "detail_selection": "descriptive_inventory_no_quota",
     "analysis_workflow": "user_confirmed",
     "independent_delivery": "existing_package_boundary",
-    "aspect_tolerance": "existing_policy_unverified_for_current_candidate"
+    "aspect_tolerance": "existing_0.3_percent_policy_with_reported_floating_boundary_limit"
   },
-  "approval_status": "user_authorized_implementation_only",
-  "approval_evidence": "用户2026-10-05明确授权两档技能与可靠性改造，限定静态阅读和差异审查；后续测试、效果确认与稳定版替换分别记录。",
-  "validation_scope": "0.4.0 draft：仅完成静态代码与文档审查；本轮未运行测试、构建、生图或基准测试。运行可靠性、两档画法、主体与构图及文字效果待后续云端验证。历史结果保存在validation.md，报告R1/R2各自独立。",
+  "approval_status": "user_authorized_candidate_main_adoption",
+  "approval_evidence": "用户2026-10-06明确采纳重要度与绘制顺序分离、小范围独立开发蜡笔画法、来源署名与状态及使用证据维护；2026-10-08明确要求合并到主分支并推送，授权main采用本次候选。版本保持draft，用户视觉验收范围分别记录。",
+  "validation_scope": "0.5.0参考稿候选：79项项目回归、两包全新安装、本skill37项测试及示范哈希复现通过；四张同图对照技术通过、三张逐项视觉通过，清理后新输入核心与媒介通过、严格取舍失败。5次实际调用、自动重试0，完整范围见validation.md。0.4.0外部效果获用户认可，原报告通过、失败与边界保留。",
   "incidental_text_policy": {
     "core": "关键文字或用户要求采用exact，保持字符、符号与原位置",
     "supporting": "无关远景小字可simplify，在原有文字区域概括",
@@ -103,7 +103,7 @@
   "prompt_scope": "原图为第一内容依据，第二图为简化参考稿；共享核心、构图与文字规则，两档画法提示读取drawing-levels.json",
   "input_routing": "single_visual_structure_workflow",
   "detail_definition": "核心承担身份、动作、必要结构、语义数量或空间关系；辅助与可省略信息按移除后的主体、场景及表达判断",
-  "detail_priority": "按当前原图与用户意图的语义贡献排列，面积、显著性及配饰身份只作观察线索",
+  "detail_priority": "语义贡献排序决定retain/simplify/omit；每个guide形状的draw_order独立决定原图从后到前的覆盖",
   "analysis_workflow": [
     "view_current_source",
     "confirm_method_for_this_request",
@@ -115,14 +115,15 @@
     "save_original_then_export_and_review"
   ],
   "candidate_approvals": {
-    "scope": "user_authorized_implementation_only",
-    "stable_replacement": "pending",
+    "scope": "user_authorized_limited_guide_change",
+    "style_confirmation": "guide-design.md",
+    "stable_replacement": "user_authorized_main_adoption_2026-10-08",
     "user_visual_acceptance": "pending"
   },
   "drawing_levels_ref": "drawing-levels.json",
   "historical_user_statements": {
     "through_version": "0.3.3",
-    "scope": "历史授权与反馈；当前执行以0.4.0要求为准",
+    "scope": "历史授权与反馈；当前执行以0.5.0要求为准",
     "statements": [
       "输入图片转换为稚拙儿童蜡笔风格，保留核心内容、构图与主色",
       "绘画能力分低中高三档，默认中，越低细节越粗拙",
@@ -136,5 +137,27 @@
       "用户指出低档内部结构消失，要求继续改进通用skill并总结广泛适用方法；按视觉作用拆分结构基底与附属丰富度，每档保护最低充分结构。",
       "用户要求复杂上传图的验证覆盖人物、风景等内容；按视觉层次、遮挡、辨识与信息密度检查通用流程。"
     ]
-  }
+  },
+  "guide_rendering": {
+    "core": "flat-structure-v1",
+    "plan": "crayon-guide-v1",
+    "seed": 20261006,
+    "order": "unique_draw_order_back_to_front",
+    "confirmation_ref": "guide-design.md"
+  },
+  "accepted_baseline": {
+    "version": "0.4.0",
+    "commit": "0326cbda0e169dd54b3ecec15b3707e3698508a2",
+    "release": "v1.1.0",
+    "approval": "用户明确认可dots驱动的附件效果已经达到目标",
+    "scope": "外部100图两档回归的用户效果认可；报告严格结果及失败分别保留",
+    "evidence_ref": "validation.md"
+  },
+  "historical_0_4_0_user_statements": [
+    "用户2026-10-05要求将三档收敛为简笔蜡笔、丰富蜡笔，每次绘画请求明确确认",
+    "两档共享核心内容，简化改变表达复杂度，保留主体身份、动作、结构及构图",
+    "内部规划术语与画面文字隔离，关键文字按语义重要性保留",
+    "修复当前代码中的动画识别、导出恢复及安全写入缺陷，保存原始生成结果",
+    "本轮只实施技能、代码及必要文档并静态审查，测试、构建、生图及基准测试由后续测试方负责"
+  ]
 }

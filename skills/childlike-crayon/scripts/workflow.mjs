@@ -5,10 +5,10 @@ import { dirname, isAbsolute, relative, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
 import sharp from 'sharp';
-import { renderGuide, validateMarks } from './plan-guide.mjs';
+import { orderedMarks, renderGuide, validateMarks } from './plan-guide.mjs';
 
 export const ROOT = fileURLToPath(new URL('../', import.meta.url));
-export const VERSION = '0.4.0';
+export const VERSION = '0.5.0';
 const PAPER = '#faf7ef';
 const MAX_BYTES = 25 * 1024 * 1024;
 const MAX_PIXELS = 40_000_000;
@@ -166,6 +166,7 @@ function contentPlan(analysis) {
     }
   }
   const selected = analysis.optional_details.filter(item => item.action !== 'omit');
+  orderedMarks(analysis);
   const count = analysis.optional_details.length;
   const imageText = analysis.image_text ?? [];
   if (!Array.isArray(imageText) || imageText.some(item => !item || !text(item.source)
@@ -204,7 +205,7 @@ export async function prepare(input, out, analysis, drawingLevel) {
   const { data, info } = await source.decoder.autoOrient().toColourspace('srgb').flatten({ background: PAPER })
     .resize({ width: 1536, height: 1536, fit: 'inside', withoutEnlargement: true }).png().toBuffer({ resolveWithObject: true });
   const core = await renderGuide({ ...analysis, optional_details: [] }, info.width, info.height, PAPER);
-  const guide = await renderGuide(analysis, info.width, info.height, PAPER);
+  const guide = await renderGuide(analysis, info.width, info.height, PAPER, { drawingLevel });
   const gcd = (a, b) => b ? gcd(b, a % b) : a;
   const divisor = gcd(source.width, source.height);
   const ratio = `${source.width / divisor}:${source.height / divisor}`;
@@ -229,6 +230,7 @@ export async function prepare(input, out, analysis, drawingLevel) {
       role: 'task_derived_core_only', mark_count: core.mark_count },
     generation_reference: { file: 'plan-reference.png', sha256: hash(guide.bytes),
       role: 'supporting_plan_source_image_is_authoritative', mark_count: guide.mark_count },
+    guide_rendering: { core: core.rendering, plan: guide.rendering, order: 'explicit_draw_order_back_to_front' },
     generation_images: ['input.png', 'plan-reference.png'],
     prompt: { file: 'prompt.txt', sha256: hash(prompt) },
     execution: { renderer: 'host-image-edit-tool', provider: null, provider_version: null, seed: null },

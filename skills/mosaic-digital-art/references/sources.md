@@ -2,6 +2,8 @@
 
 访问日期：2026-10-02。用途：已获用户确认的公开素材本地渲染样例。
 
+2026-10-06补充署名核验：感谢 Victor Ribeiro（[victorqribeiro](https://github.com/victorqribeiro)）的[imgToAscii](https://github.com/victorqribeiro/imgToAscii)提供初始化字符画调研线索，MIT署名见[原始许可](https://github.com/victorqribeiro/imgToAscii/blob/master/LICENSE)。本skill的渲染、运动和字形由本项目编写。感谢 Lovell Fuller（[lovell](https://github.com/lovell)）及sharp贡献者、John Cupitt（[jcupitt](https://github.com/jcupitt)）及[libvips社区](https://github.com/libvips/libvips)提供实际依赖；[Agent Skills规范](https://agentskills.io/specification)提供独立skill格式。NASA素材页的完整署名已复核，具体使用范围沿下文记录。
+
 ## 内容图
 
 - 页面：[The Near Side of the Moon](https://science.nasa.gov/resource/the-near-side-of-the-moon/)。作者署名：NASA/GSFC/Arizona State University。页面说明为 LRO 月球近侧图像。
