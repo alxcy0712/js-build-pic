@@ -14,7 +14,7 @@
 npx skills add alxcy0712/js-build-pic --skill childlike-crayon
 ```
 
-安装要求、用法与按需示范见 [儿童蜡笔画说明](skills/childlike-crayon/README.md)。本仓库保持 public，作为 skills.sh 的公开分发源。
+安装要求、用法与按需示范见 [儿童蜡笔画说明](skills/childlike-crayon/README.md)，在线目录见 [skills.sh 页面](https://skills.sh/alxcy0712/js-build-pic/childlike-crayon)。本仓库保持 public，作为 skills.sh 的公开分发源。
 
 维护本项目时，Agent 从 [AGENTS.md](AGENTS.md) 开始，再读取 [当前状态](context/project-state.md) 和 [风格索引](styles/index.json)。新建风格按 [创建流程](playbooks/create-skill.md) 执行；项目内普通出图按 [出图流程](playbooks/render-image.md) 执行。
 
