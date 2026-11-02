@@ -1,6 +1,7 @@
 ---
 name: childlike-crayon
 description: 将内容图片重绘为儿童蜡笔画，保护主体身份、动作、构图与主色；每次请求明确选择简笔蜡笔或丰富蜡笔，默认生成一张。适用于上传图片的蜡笔风格转换。
+license: MIT
 metadata:
   version: "0.5.0"
   status: draft

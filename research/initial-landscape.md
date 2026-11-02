@@ -51,7 +51,7 @@
 | 其他代码或公开 skills | 已查看上述原始仓库与官方说明，本轮未引入 | 引入前逐一核对许可、依赖和必要署名 |
 | 用户内容图、参考图、字体 | 本轮尚未选取或复制任何素材 | 记录来源、用途和权限；长期测试及公开展示各自核对授权 |
 | 图像模型/API 与输出 | 本轮尚未接入服务，商业条款与保留政策待选型后核验 | 核对具体服务、模型、费用、传输、留存和输出条款 |
-| 本项目开源许可 | 用户尚未选择 | 发布前作出明确决定并维护许可文件 |
+| 本项目开源许可 | 2026-11-02用户确认儿童蜡笔画目录采用MIT；其余目录待定 | 蜡笔画随包维护LICENSE，第三方依赖和用户图片保留各自许可范围 |
 
 [WIPO 版权说明](https://www.wipo.int/en/web/copyright) 将作品表达作为版权保护对象；具体作品、角色、标识和素材仍需按实际使用检查。[GitHub 许可说明](https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/licensing-a-repository) 说明公开仓库与复用许可各有对应规则。当前记录仅为选型与权限核对依据，商用所需的目标地区审查保持待办状态。
 
@@ -68,3 +68,9 @@
 作者为花叔 / Huashu，GitHub账号alchaincyf。原仓库代码与文档采用MIT，字体、笔顺数据与作者角色各有独立范围。本项目从自己的guide接口独立编写蜡笔机制，使用既有锁定sharp；此次新增外部运行依赖、字体与素材数量为0。可核验的具体关联见[项目致谢](../ACKNOWLEDGMENTS.md)与[随包来源](../skills/childlike-crayon/references/sources.md)。
 
 2026-10-02 新增风格家族的同类产品、公开 skills、名称线索、CC0 样例及依赖核查，见 [儿童蜡笔画来源说明](../skills/childlike-crayon/references/sources.md)。对应生成与检查证据保存在该 skill 的验证资料中。
+
+## 2026-11-02 skills.sh 分发核查
+
+用户明确授权将儿童蜡笔画发布到skills.sh，完整GitHub仓库保持public，并确认仅该skill目录采用MIT。[官方FAQ](https://skills.sh/docs/faq)说明技能由GitHub托管，CLI安装统计触发收录；[CLI源码](https://github.com/vercel-labs/skills)支持选定skill和项目范围安装。
+
+本次临时使用官方Skills CLI 1.7.4（MIT；Node.js >=22.20.0），npm发布包的SHA-512完整性已核对。它用于分发验证，运行依赖继续使用本skill原锁文件。CLI已发现公开仓库中的childlike-crayon；安装、遥测与页面展示状态按本次真实执行结果记录。发布包由Git清单和明确新增文件构成，任务图片、日志、缓存及私人运行资料保存在忽略目录。

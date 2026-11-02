@@ -2,6 +2,8 @@
 
 本 skill 的通用规则、提示词、JS 工作流与测试由本项目编写。演示内容由调用者在运行时提供，随包运行资源仅包含通用实现和锁定依赖。
 
+2026-11-02用户确认本skill目录采用 [MIT许可](../LICENSE)，署名为alxcy0712。范围覆盖本项目编写的代码、文档、提示词和自制示范；第三方依赖与用户图片继续按各自许可和授权处理。
+
 ## 2026-10-06 直接研究与自制示范
 
 感谢花叔 / Huashu（[alchaincyf](https://github.com/alchaincyf)）公开[huashu-art-motion](https://github.com/alchaincyf/huashu-art-motion/tree/445c0752a7d9dbbf7262519e9e62842bfcb040d6)。本次读取21份公开文本，研究画材过程、分区笔触、结构保护及经验与证据配对；研究范围为源码与文档阅读。代码与文档采用MIT，角色、字体及笔顺数据各有原仓库声明的适用范围。
